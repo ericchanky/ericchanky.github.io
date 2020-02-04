@@ -1,4 +1,5 @@
 import { Box, Grid, IconButton, InputBase, makeStyles } from '@material-ui/core'
+import { observer } from 'mobx-react'
 import React from 'react'
 
 import { storeContext } from '../store'
@@ -20,7 +21,7 @@ const useStyles = makeStyles((theme) => ({
   verticle: {
     position: 'relative',
     top: '50%',
-    transform: 'translateY(-50%)',
+    transform: 'translateY(-60%)',
   },
   item: {
     textAlign: 'center',
@@ -50,7 +51,7 @@ const useStyles = makeStyles((theme) => ({
 // Password length
 const length = 6
 
-export const withAuth = (Component: (props: AuthProps) => JSX.Element, { required = false }: Props) => () => {
+export const withAuth = (Component: (props: AuthProps) => JSX.Element, { required = false }: Props) => observer(() => {
   const { container, verticle, button, label, item, input } = useStyles()
   const { config } = React.useContext(storeContext)
 
@@ -77,6 +78,7 @@ export const withAuth = (Component: (props: AuthProps) => JSX.Element, { require
                     onClick={() => {
                       if (t === '<') {
                         setPassword(password.slice(0, -1))
+                        return
                       }
                       setPassword(`${password}${t}`)
                     }}
@@ -95,4 +97,4 @@ export const withAuth = (Component: (props: AuthProps) => JSX.Element, { require
   return (
     <Component password={password} />
   )
-}
+})

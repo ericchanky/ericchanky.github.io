@@ -1,9 +1,9 @@
 {
-  "name": "gatsby-starter-default",
+  "name": "tools",
   "private": true,
   "description": "A simple starter to get up and developing quickly with Gatsby",
-  "version": "0.1.0",
-  "author": "Kyle Mathews <mathews.kyle@gmail.com>",
+  "version": "1.0.8",
+  "author": "Eric Chan KY <eric.cky715@gmail.com>",
   "dependencies": {
     "@material-ui/core": "^4.9.0",
     "@material-ui/icons": "^4.5.1",
@@ -56,11 +56,11 @@
   "license": "MIT",
   "scripts": {
     "build": "gatsby build",
-    "develop": "gatsby develop",
+    "develop": "gatsby develop --host=0.0.0.0",
     "start": "npm run develop",
     "serve": "gatsby serve",
     "clean": "gatsby clean",
-    "publish": "npm run clean && NODE_ENV=production npm run build && gh-pages -d public -b master",
+    "publish": "npm run clean && node version.js && NODE_ENV=production npm run build && gh-pages -d public -b master",
     "lint": "eslint --ext .ts,.tsx src/**",
     "lint:fix": "npm run lint -- --fix",
     "test": "echo \"Write tests! -> https://gatsby.dev/unit-testing\" && exit 1"

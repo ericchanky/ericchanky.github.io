@@ -1,121 +1,166 @@
-import { Box, makeStyles, useMediaQuery, useTheme } from '@material-ui/core'
+import { Box, Drawer, IconButton, List, ListItem, ListItemIcon, ListItemText, makeStyles } from '@material-ui/core'
+import AddIcon from '@material-ui/icons/Add'
+import ArrowForwardIcon from '@material-ui/icons/ArrowForward'
+import CachedIcon from '@material-ui/icons/Cached'
+import RemoveIcon from '@material-ui/icons/Remove'
+import SettingsIcon from '@material-ui/icons/Settings'
+import { observer } from 'mobx-react'
 import React from 'react'
-import Hammer from 'react-hammerjs'
 
 import { AuthProps, withAuth } from '../components/Auth'
+import Awake from '../components/Awake'
+import Image from '../components/Image'
 import { withLayout } from '../components/Layout'
-import useImages from '../components/useImages'
+import Video from '../components/Video'
+import { storeContext } from '../store'
+import { Actions, emitter } from '../utils/event'
 
 interface Props extends AuthProps {}
 
-interface StyleProps {
-  image: string
-  background: string
-  offset: number
-}
-
-const useStyles = makeStyles((theme) => ({
-  container: {
-    width: '100vw',
-    height: '100vh',
+const useStyles = makeStyles({
+  drawer: {
+    width: 280,
   },
-  hidden: {
-    display: 'none',
-  },
-  image: ({ image }: StyleProps) => ({
-    width: '100%',
-    height: '100%',
-    backgroundSize: 'contain',
-    backgroundRepeat: 'no-repeat',
-    backgroundPosition: 'center',
-    backgroundImage: image && `url(${image})`,
-    transition: theme.transitions.create(['background'], {
-      duration: theme.transitions.duration.complex,
-      easing: theme.transitions.easing.easeInOut,
-    }),
-  }),
-  background: ({ offset, background }: StyleProps) => ({
-    position: 'absolute',
+  settingButton: {
+    position: 'fixed',
     top: 0,
-    left: 0,
-    width: '100%',
-    height: '100%',
-    zIndex: -1,
-    backgroundPosition: `${offset}px center`,
-    backgroundImage: background && `url(${background})`,
-    transition: theme.transitions.create(['background'], {
-      duration: theme.transitions.duration.shortest,
-      easing: theme.transitions.easing.easeInOut,
-      delay: 100,
-    }),
-    '&::after': {
-      content: '""',
-      position: 'absolute',
-      top: 0,
-      left: 0,
-      width: '100%',
-      height: '100%',
-      backgroundColor: 'rgba(8, 8, 8, 0.92)',
-    },
-  }),
-}))
-
-const PRELOAD = 5
+    right: 0,
+    color: 'rgba(255, 255, 255, 0.1)',
+  },
+})
 
 const Wallpaper = ({ password }: Props) => {
-  const theme = useTheme()
-  const isLargerThanMD = useMediaQuery(theme.breakpoints.up('md'))
+  const { image } = React.useContext(storeContext)
+  const { drawer, settingButton } = useStyles()
 
-  const [list, setList] = useImages(password, PRELOAD)
-  const selectedImage = React.useMemo(() => list.find((_, i) => i === 0), [list])
-  const backgroundImage = React.useMemo(() => list.find((_, i) => i === 1), [list])
-
-  const next = React.useCallback(() => {
-    setList((l) => l.slice(1))
-  }, [setList])
-
-  const offset = React.useMemo(() => {
-    if (!backgroundImage) { return 0 }
-    return backgroundImage.width * 0.2 * -1
-  }, [backgroundImage])
-
-  const { container, hidden, image, background } = useStyles({
-    offset,
-    image: selectedImage ? selectedImage.url : '',
-    background: backgroundImage ? backgroundImage.url : '',
+  const [open, setOpen] = React.useState(false)
+  const [type, setType] = React.useState<'girl' | 'gym'>('girl')
+  const [config, setConfig] = React.useState({
+    interval: 0,
   })
 
+  React.useEffect(() => {
+    if (config.interval === 0) { return }
+    const t = setInterval(image.next, config.interval * 1000)
+    return () => clearInterval(t)
+  }, [config.interval, image.next])
+
+  const onTap = React.useCallback((evt: HammerInput) => {
+    if (evt.center.x < 130) {
+      image.next()
+    }
+  }, [image])
+
+  React.useEffect(() => {
+    emitter.on(Actions.TAP, onTap)
+    return () => {
+      emitter.off(Actions.TAP, onTap)
+    }
+  })
+
+  React.useEffect(() => {
+    emitter.on(Actions.SWIPE_LEFT, image.next)
+    emitter.on(Actions.SWIPE_RIGHT, image.next)
+
+    return () => {
+      emitter.off(Actions.SWIPE_LEFT, image.next)
+      emitter.off(Actions.SWIPE_RIGHT, image.next)
+    }
+  }, [image.next])
+
+  const changeType = React.useCallback((t: typeof type) => {
+    setType(t)
+    image.list.replace([])
+  }, [image.list, type])
+
   return (
-    <Hammer
-      direction="DIRECTION_ALL"
-      onSwipe={(evt) => {
-        // if (scale > 1) { return }
-        if (evt.direction === 2 || evt.direction === 4) {
-          // direction left or right
-          next()
-        }
-        // if (evt.direction === 16) {
-        //   // direction down
-        //   setOptions({ ...options, openMenu: true })
-        // }
-      }}
-    >
-      <Box className={container}>
-        {list.slice(0, PRELOAD).map((img) => {
-          return <img key={img.id} className={hidden} src={img.url} />
-        })}
-        {backgroundImage && isLargerThanMD && (
-          <Box className={background} />
-        )}
-        {selectedImage && (
-          <Box className={image} />
-        )}
-      </Box>
-    </Hammer>
+    <Box>
+      <Awake />
+      {type === 'girl' && <Image password={password} />}
+      {type === 'gym' && <Video password={password} />}
+      <IconButton
+        color="secondary"
+        className={settingButton}
+        onClick={() => setOpen(true)}
+      >
+        <SettingsIcon />
+      </IconButton>
+      <Drawer
+        open={open}
+        onClose={() => setOpen(false)}
+        anchor="right"
+      >
+        <Box className={drawer}>
+          <List>
+            <ListItem>
+              <ListItemText
+                primary={image.list.length}
+                secondary="Total Image"
+              />
+              <ListItemIcon>
+                <IconButton
+                  color="secondary"
+                  onClick={() => location.reload(true)}
+                >
+                  <CachedIcon />
+                </IconButton>
+              </ListItemIcon>
+            </ListItem>
+            <ListItem>
+              <ListItemIcon>
+                <IconButton
+                  color="secondary"
+                  onClick={() => setConfig({ ...config, interval: config.interval + 1 })}
+                >
+                  <AddIcon />
+                </IconButton>
+              </ListItemIcon>
+              <ListItemText
+                primary={config.interval}
+                secondary="Automation Interval"
+              />
+              <ListItemIcon>
+                <IconButton
+                  color="secondary"
+                  onClick={() => {
+                    if (config.interval === 0) { return }
+                    setConfig({ ...config, interval: config.interval - 1 })
+                  }}
+                >
+                  <RemoveIcon />
+                </IconButton>
+              </ListItemIcon>
+            </ListItem>
+            <ListItem>
+              <ListItemText primary="Girls" />
+              <ListItemIcon>
+                <IconButton
+                  color="secondary"
+                  onClick={() => changeType('girl')}
+                >
+                  <ArrowForwardIcon />
+                </IconButton>
+              </ListItemIcon>
+            </ListItem>
+            <ListItem>
+              <ListItemText primary="GYM" />
+              <ListItemIcon>
+                <IconButton
+                  color="secondary"
+                  onClick={() => changeType('gym')}
+                >
+                  <ArrowForwardIcon />
+                </IconButton>
+              </ListItemIcon>
+            </ListItem>
+          </List>
+        </Box>
+      </Drawer>
+    </Box>
   )
 }
 
-export default withLayout(withAuth(Wallpaper, {
+export default withLayout(withAuth(observer(Wallpaper), {
   required: true,
 }), {
   title: 'Wallpaper',

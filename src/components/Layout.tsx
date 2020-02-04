@@ -1,18 +1,19 @@
-import { AppBar, Box, CardContent, createMuiTheme, CssBaseline, Dialog, DialogContent, fade, IconButton, Input, makeStyles, TextField, ThemeProvider, Toolbar, Typography } from '@material-ui/core'
+import { AppBar, Box, CardContent, createMuiTheme, CssBaseline, fade, IconButton, makeStyles, ThemeProvider, Toolbar, Typography } from '@material-ui/core'
 import deepOrange from '@material-ui/core/colors/deepOrange'
 import deepPurple from '@material-ui/core/colors/deepPurple'
 import Brightness4Icon from '@material-ui/icons/Brightness4'
 import Brightness7Icon from '@material-ui/icons/Brightness7'
-import CloseIcon from '@material-ui/icons/Close'
 import GitHubIcon from '@material-ui/icons/GitHub'
 import MenuIcon from '@material-ui/icons/Menu'
 import { observer } from 'mobx-react'
 import React from 'react'
+import Hammer from 'react-hammerjs'
 import Helmet, { HelmetProps } from 'react-helmet'
 
 import store, { persist, storeContext } from '../store'
+import { Actions, emitter } from '../utils/event'
 import GridDivider from './GridDivider'
-import Menu from './Menu'
+import MenuDialog from './MenuDialog'
 
 const titleTemplate = (t: string) => `${t} | Tools`
 
@@ -50,14 +51,15 @@ const darkTheme = createMuiTheme({
   palette: {
     primary: {
       main: '#444',
-      contrastText: '#fff',
+      contrastText: '#f5f5f5',
     },
     secondary: {
       main: '#ddd',
       contrastText: '#333',
     },
     text: {
-      primary: '#eee',
+      primary: '#f5f5f5',
+      secondary: '#aaa',
     },
     background: {
       paper: '#222',
@@ -96,7 +98,6 @@ export const withLayout = (Component: () => JSX.Element, { title = 'Home Page', 
   
     const [open, setOpen] = React.useState(false)
     const [ready, setReady] = React.useState(false)
-    const [filter, setFilter] = React.useState('')
   
     React.useEffect(() => {
       document.title = titleTemplate(title)
@@ -117,74 +118,102 @@ export const withLayout = (Component: () => JSX.Element, { title = 'Home Page', 
       if (theme) { return theme }
       return config.theme
     }, [config.theme])
+
+    const toggleMenu = React.useCallback((evt: HammerInput) => {
+      if (evt.center.y - evt.deltaY > 100) { return }
+      setOpen(true)
+    }, [])
+
+    React.useEffect(() => {
+      emitter.on(Actions.SWIPE_DOWN, toggleMenu)
+      return () => {
+        emitter.off(Actions.SWIPE_DOWN, toggleMenu)
+      }
+    }, [toggleMenu])
   
     return (
       <storeContext.Provider value={store}>
         <ThemeProvider theme={selectedTheme === 'dark' ? darkTheme : lightTheme }>
-          <CssBaseline />
-          <Helmet
-            htmlAttributes={{ lang: 'en' }}
-            title={titleTemplate(title)}
-            {...props}
-          />
-          {!disableHeader && (
-            <AppBar>
-              <Toolbar>
-                <IconButton
-                  color="inherit"
-                  className={menuButton}
-                  onClick={() => setOpen(true)}
-                >
-                  <MenuIcon />
-                </IconButton>
-                <Typography variant="h5" component="h1">{title}</Typography>
-                <GridDivider />
-                <IconButton
-                  color="inherit"
-                  onClick={() => config.set({ theme: config.theme === 'dark' ? 'light' : 'dark' })}
-                >
-                  {selectedTheme === 'dark' ? <Brightness4Icon /> : <Brightness7Icon />}
-                </IconButton>
-                <IconButton
-                  color="inherit"
-                  onClick={openGithub}
-                >
-                  <GitHubIcon />
-                </IconButton>
-              </Toolbar>
-            </AppBar>
-          )}
-          <Box component="main" className={main}>
-            {!disableHeader && <Toolbar />}
-            {!disableHeader && ready && (
-              <CardContent>
-                <Component />
-              </CardContent>
-            )}
-            {disableHeader && ready && <Component />}
-          </Box>
-          <Dialog
-            fullScreen
-            open={open}
-            onClose={() => setOpen(false)}
+          <Hammer
+            direction="DIRECTION_ALL"
+            onSwipe={(evt) => {
+              emitter.emit(Actions.SWIPE, evt)
+              if (evt.direction === 2) {
+                emitter.emit(Actions.SWIPE_LEFT, evt)
+              }
+              if (evt.direction === 4) {
+                emitter.emit(Actions.SWIPE_RIGHT, evt)
+              }
+              if (evt.direction === 8) {
+                emitter.emit(Actions.SWIPE_UP, evt)
+              }
+              if (evt.direction === 16) {
+                emitter.emit(Actions.SWIPE_DOWN, evt)
+              }
+            }}
+            onTap={(evt) => emitter.emit(Actions.TAP, evt)}
+            onDoubleTap={(evt) => emitter.emit(Actions.DOUBLE_TAP, evt)}
+            onPanStart={(evt) => emitter.emit(Actions.PAN_START, evt)}
+            onPanEnd={(evt) => emitter.emit(Actions.PAN_END, evt)}
+            onPan={(evt) => emitter.emit(Actions.PAN, evt)}
+            onPinchStart={(evt) => emitter.emit(Actions.PINCH_START, evt)}
+            onPinchEnd={(evt) => emitter.emit(Actions.PINCH_END, evt)}
+            onPinch={(evt) => emitter.emit(Actions.PINCH, evt)}
+            options={{
+              recognizers: {
+                pinch: { enable: true },
+              },
+            }}
           >
-            <AppBar elevation={0} color="inherit" position="relative">
-              <Toolbar>
-                <TextField
-                  placeholder="Search..."
-                  value={filter}
-                  onChange={(evt) => setFilter(evt.target.value)}
-                />
-                <GridDivider />
-                <IconButton color="inherit" onClick={() => setOpen(false)}>
-                  <CloseIcon />
-                </IconButton>
-              </Toolbar>
-            </AppBar>
-            <DialogContent>
-              <Menu filter={filter} />
-            </DialogContent>
-          </Dialog>
+            <Box>
+              <CssBaseline />
+              <Helmet
+                htmlAttributes={{ lang: 'en' }}
+                title={titleTemplate(title)}
+                {...props}
+              />
+              {!disableHeader && (
+                <AppBar>
+                  <Toolbar>
+                    <IconButton
+                      color="inherit"
+                      className={menuButton}
+                      onClick={() => setOpen(true)}
+                    >
+                      <MenuIcon />
+                    </IconButton>
+                    <Typography variant="h5" component="h1">{title}</Typography>
+                    <GridDivider />
+                    <IconButton
+                      color="inherit"
+                      onClick={() => config.set({ theme: config.theme === 'dark' ? 'light' : 'dark' })}
+                    >
+                      {selectedTheme === 'dark' ? <Brightness4Icon /> : <Brightness7Icon />}
+                    </IconButton>
+                    <IconButton
+                      color="inherit"
+                      onClick={openGithub}
+                    >
+                      <GitHubIcon />
+                    </IconButton>
+                  </Toolbar>
+                </AppBar>
+              )}
+              <Box component="main" className={main}>
+                {!disableHeader && <Toolbar />}
+                {!disableHeader && ready && (
+                  <CardContent>
+                    <Component />
+                  </CardContent>
+                )}
+                {disableHeader && ready && <Component />}
+              </Box>
+              <MenuDialog
+                dialogProps={{ open }}
+                onClose={() => setOpen(false)}
+              />
+            </Box>
+          </Hammer>
         </ThemeProvider>
       </storeContext.Provider>
     )
