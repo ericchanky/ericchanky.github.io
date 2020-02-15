@@ -2,12 +2,13 @@
   "name": "tools",
   "private": true,
   "description": "A simple starter to get up and developing quickly with Gatsby",
-  "version": "1.0.8",
+  "version": "1.0.11",
   "author": "Eric Chan KY <eric.cky715@gmail.com>",
   "dependencies": {
     "@material-ui/core": "^4.9.0",
     "@material-ui/icons": "^4.5.1",
     "axios": "^0.19.2",
+    "classnames": "^2.2.6",
     "csvtojson": "^2.0.10",
     "date-fns": "^2.9.0",
     "gatsby": "^2.19.7",
@@ -31,6 +32,7 @@
   "devDependencies": {
     "@babel/plugin-proposal-class-properties": "^7.8.3",
     "@babel/plugin-proposal-decorators": "^7.8.3",
+    "@types/classnames": "^2.2.9",
     "@types/lodash": "^4.14.149",
     "@types/node": "^13.7.0",
     "@types/react": "^16.9.19",

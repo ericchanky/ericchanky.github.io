@@ -1,10 +1,12 @@
 import { Box, makeStyles, useMediaQuery, useTheme } from '@material-ui/core'
+import classNames from 'classnames'
 import { observer } from 'mobx-react'
 import React from 'react'
 
 import { storeContext } from '../store'
 import { Actions, emitter } from '../utils/event'
 import { AuthProps } from './Auth'
+import ImageBox from './ImageBox'
 
 interface Props extends AuthProps {
   hideBackground?: boolean
@@ -12,34 +14,44 @@ interface Props extends AuthProps {
 }
 
 interface StyleProps {
-  foreground: string
-  background: string
   offset: number
   transform: string
 }
 
 const useStyles = makeStyles((theme) => ({
+  '@keyframes backgroundScale': {
+    '0%': {
+      transform: 'scale(1)',
+      animationTimingFunction: 'ease-in',
+    },
+    '65%': {
+      transform: 'scale(1.15)',
+      animationTimingFunction: 'ease-out',
+    },
+  },
+  animate: {
+    transform: 'scale(1)',
+    animationName: '$backgroundScale',
+    animationDuration: '8s',
+    animationIterationCount: 'infinite',
+  },
   container: {
     width: '100vw',
     height: '100vh',
   },
-  hidden: {
-    display: 'none',
-  },
-  foreground: ({ foreground, transform }: StyleProps) => ({
+  foreground: ({ transform }: StyleProps) => ({
     width: '100%',
     height: '100%',
     backgroundSize: 'contain',
     backgroundRepeat: 'no-repeat',
     backgroundPosition: 'center',
-    backgroundImage: foreground && `url(${foreground})`,
     transform,
     transition: theme.transitions.create(['background'], {
       duration: theme.transitions.duration.complex,
       easing: theme.transitions.easing.easeInOut,
     }),
   }),
-  background: ({ offset, background }: StyleProps) => ({
+  background: ({ offset }: StyleProps) => ({
     position: 'absolute',
     top: 0,
     left: 0,
@@ -47,7 +59,6 @@ const useStyles = makeStyles((theme) => ({
     height: '100%',
     zIndex: -1,
     backgroundPosition: `${offset}px center`,
-    backgroundImage: background && `url(${background})`,
     transition: theme.transitions.create(['background'], {
       duration: theme.transitions.duration.shortest,
       easing: theme.transitions.easing.easeInOut,
@@ -174,10 +185,8 @@ const Image = ({ password, hideBackground = false, hideForeground = false }: Pro
     }
   }, [onDoubleTap, resetAttr])
 
-  const { container, hidden, foreground, background } = useStyles({
+  const { container, animate, foreground, background } = useStyles({
     offset,
-    foreground: first ? first.url : '',
-    background: second ? second.url : '',
     transform,
   })
 
@@ -195,14 +204,11 @@ const Image = ({ password, hideBackground = false, hideForeground = false }: Pro
 
   return (
     <Box className={container}>
-      {image.list.slice(0, PRELOAD).map((img) => (
-        <img key={img.id} className={hidden} src={img.url} onError={reset} />
-      ))}
       {second && isLargerThanMD && !hideBackground && (
-        <Box className={background} />
+        <ImageBox className={classNames(background, animate)} src={second.data} />
       )}
       {first && !hideForeground && (
-        <Box className={foreground} />
+        <ImageBox className={foreground} src={first.data} />
       )}
     </Box>
   )

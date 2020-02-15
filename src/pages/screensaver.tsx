@@ -1,4 +1,4 @@
-import { Box, makeStyles, Typography } from '@material-ui/core'
+import { Box, CircularProgress, makeStyles, Typography } from '@material-ui/core'
 import axios from 'axios'
 import csv from 'csvtojson'
 import { format, isBefore } from 'date-fns'
@@ -8,7 +8,6 @@ import React from 'react'
 
 import { withLayout } from '../components/Layout'
 import { storeContext } from '../store'
-import { take } from '../utils/rand'
 
 const useStyles = makeStyles((theme) => ({
   main: {
@@ -43,13 +42,12 @@ const useStyles = makeStyles((theme) => ({
   },
 }))
 
-const source = `https://dzway.herokuapp.com/proxy?url=${encodeURIComponent('https://docs.google.com/spreadsheets/d/e/2PACX-1vTfSMdib9NVMRR0UxeFCg9jM_nLKxFpGwur-NjjdNQlpqZXerymjiNzQm_1Nu9P3bvnc-WzN51n4o8B/pub?gid=0&single=true&output=tsv')}`
+const source = `https://dzway.herokuapp.com/proxy?src=${encodeURIComponent('https://docs.google.com/spreadsheets/d/e/2PACX-1vTfSMdib9NVMRR0UxeFCg9jM_nLKxFpGwur-NjjdNQlpqZXerymjiNzQm_1Nu9P3bvnc-WzN51n4o8B/pub?gid=0&single=true&output=tsv')}`
 
 const Phrase = () => {
   const { main, phrasePrimary, phraseSecondary, phraseContainer, time, timeFont } = useStyles()
   const { phrase } = React.useContext(storeContext)
 
-  const [item, setItem] = React.useState<typeof phrase['list'][number]>()
   const [now, setNow] = React.useState(new Date)
 
   const fetch = React.useCallback(async () => {
@@ -68,12 +66,6 @@ const Phrase = () => {
   }, [fetch])
 
   React.useEffect(() => {
-    if (!item && phrase.list.length > 0) {
-      setItem(take(phrase.list))
-    }
-  }, [item, phrase.list])
-
-  React.useEffect(() => {
     const interval = setInterval(() => setNow(new Date), 1000)
     return () => clearInterval(interval)
   }, [])
@@ -81,9 +73,10 @@ const Phrase = () => {
   return (
     <Box className={main}>
       <Box className={phraseContainer}>
-        <Typography className={phrasePrimary}>{item && item.phrase}</Typography>
-        {item && item.author && (
-          <Typography className={phraseSecondary}>— {item.author}</Typography>
+        {!phrase.item && <CircularProgress color="primary" />}
+        <Typography className={phrasePrimary}>{phrase.item && phrase.item.phrase}</Typography>
+        {phrase.item && phrase.item.author && (
+          <Typography className={phraseSecondary}>— {phrase.item.author}</Typography>
         )}
       </Box>
       <Box className={time}>

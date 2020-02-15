@@ -95,7 +95,7 @@ const Wallpaper = ({ password }: Props) => {
             <ListItem>
               <ListItemText
                 primary={image.list.length}
-                secondary="Total Image"
+                secondary={image.album}
               />
               <ListItemIcon>
                 <IconButton

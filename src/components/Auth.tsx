@@ -1,4 +1,5 @@
 import { Box, Grid, IconButton, InputBase, makeStyles } from '@material-ui/core'
+import Axios from 'axios'
 import { observer } from 'mobx-react'
 import React from 'react'
 
@@ -49,24 +50,42 @@ const useStyles = makeStyles((theme) => ({
 }))
 
 // Password length
-const length = 6
+const PasswordLength = 6
 
 export const withAuth = (Component: (props: AuthProps) => JSX.Element, { required = false }: Props) => observer(() => {
   const { container, verticle, button, label, item, input } = useStyles()
-  const { config } = React.useContext(storeContext)
+  const { config, image } = React.useContext(storeContext)
 
-  const [password, setPassword] = React.useState('')
+  const [password, setPassword] = React.useState(config.password)
 
   React.useEffect(() => {
-    if (password.length < length) { return }
-    config.set({ password })
-  }, [config, password])
+    // touch server
+    Axios.get('https://dzway.herokuapp.com/')
+  }, [])
 
-  if (password.length < length && required) {
+  const validatePassword = React.useCallback(async (pw: string) => {
+    try {
+      await image.fetchAuth(pw)
+      config.set({ password: pw })
+    } catch (err) {
+      setPassword('')
+    }
+  }, [config, image])
+
+  React.useEffect(() => {
+    if (password.length < PasswordLength) { return }
+    validatePassword(password)
+  }, [password, validatePassword])
+
+  if (config.password.length < PasswordLength && required) {
     return (
       <Box className={container}>
         <Box className={verticle}>
-          <InputBase classes={{ input }} value={Array(password.length).fill('*').join('')} />
+          <InputBase
+            readOnly
+            classes={{ input }}
+            value={password.replace(/./g, '*')}
+          />
           <Grid container spacing={2}>
             {'123456789*0<'.split('').map((t) => {
               return (
@@ -82,6 +101,7 @@ export const withAuth = (Component: (props: AuthProps) => JSX.Element, { require
                       }
                       setPassword(`${password}${t}`)
                     }}
+                    disabled={password.length >= PasswordLength}
                   >
                     {t}
                   </IconButton>

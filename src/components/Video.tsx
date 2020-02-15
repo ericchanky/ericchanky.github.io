@@ -1,5 +1,4 @@
 import { Box, makeStyles } from '@material-ui/core'
-import Axios from 'axios'
 import { observer } from 'mobx-react'
 import React from 'react'
 
@@ -20,36 +19,7 @@ const useStyles = makeStyles(() => ({
 const Video = ({ password }: Props) => {
   const videoRef = React.createRef<HTMLVideoElement>()
   const { image } = React.useContext(storeContext)
-  const { first, second } = image
-
-  const fetchVideo = React.useCallback(async (src: string) => {
-    const url = encodeURIComponent(src)
-    const res = await Axios.get(`https://dzway.herokuapp.com/video?src=${url}`, {
-      responseType: 'arraybuffer',
-    })
-    const encoded = Buffer.from(res.data, 'binary').toString('base64')
-    return `data:video/mp4;base64,${encoded}`
-  }, [])
-
-  const fetchFirstVideo = React.useCallback(async () => {
-    if (!first || first.data != null) { return }
-    const s = await fetchVideo(first.url)
-    image.setItem(first.id, s)
-  }, [fetchVideo, first, image])
-
-  React.useEffect(() => {
-    fetchFirstVideo()
-  }, [fetchFirstVideo])
-
-  const fetchNextVideo = React.useCallback(async () => {
-    if (!second || second.data != null) { return }
-    const s = await fetchVideo(second.url)
-    image.setItem(second.id, s)
-  }, [fetchVideo, image, second])
-
-  React.useEffect(() => {
-    fetchNextVideo()
-  }, [fetchNextVideo])
+  const { first } = image
 
   const { container } = useStyles()
 
@@ -81,7 +51,7 @@ const Video = ({ password }: Props) => {
         autoPlay
         muted
       >
-        {first && first.data && <source src={first.data} type="video/mp4" />}
+        {first && first.data && <source src={first.data} type={first.mimeType} />}
       </video>
     </Box>
   )

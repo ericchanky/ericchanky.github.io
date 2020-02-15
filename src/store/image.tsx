@@ -14,6 +14,7 @@ export interface ImageItem {
   width: number,
   height: number,
   mimeType: string,
+  fetching: boolean,
   data?: string | null,
 }
 
@@ -21,6 +22,15 @@ const api = Axios.create({
   baseURL: 'https://dzway.herokuapp.com',
   timeout: 30000,
 })
+
+// const fetchData = async (src: string, mimeType: string) => {
+//   // const url = encodeURIComponent(src)
+//   const res = await Axios.get(src, {
+//     responseType: 'arraybuffer',
+//   })
+//   const encoded = Buffer.from(res.data, 'binary').toString('base64')
+//   return `data:${mimeType};base64,${encoded}`
+// }
 
 class Image extends BaseStore {
   @observable public list = observable.array<ImageItem>([])
@@ -37,6 +47,31 @@ class Image extends BaseStore {
         this.fetch(id, null)
       }
     }, { delay: 2000 })
+
+    reaction(() => this.list.slice(0, this.preload).map((item) => item.id), (ids) => {
+      // prefetch data
+      this.list.filter((item) => ids.includes(item.id))
+        .filter((item) => !item.fetching && !item.data)
+        .forEach(this.fetchData)
+    }, { delay: 100 })
+  }
+
+  @computed
+  public get album() {
+    const selected = Object.entries(albumList).find(([, value]) => value === this.albumId)
+    if (selected) { return selected[0] }
+    return ''
+  }
+
+  @action.bound
+  public async fetchData(item: ImageItem) {
+    item.fetching = true
+    const res = await Axios.get(`https://dzway.herokuapp.com/proxy?src=${encodeURIComponent(item.url)}`, {
+      responseType: 'arraybuffer',
+    })
+    const encoded = Buffer.from(res.data, 'binary').toString('base64')
+    item.data = `data:${item.mimeType};base64,${encoded}`
+    item.fetching = false
   }
 
   @action.bound
@@ -74,8 +109,13 @@ class Image extends BaseStore {
     return this.list.find((_, i) => i === 1) || null
   }
 
-  private async fetchAuth() {
-    const res = await api.post('/auth')
+  @action.bound
+  public async fetchAuth(password = this.password) {
+    const res = await api.post('/auth', null, {
+      headers: {
+        'x-dzway-pwd': password,
+      },
+    })
     this.auth = { token: `${res.data.token_type} ${res.data.access_token}`, expiry: addHours(new Date, 1) }
   }
 
@@ -92,10 +132,6 @@ class Image extends BaseStore {
         access_token: this.auth.token,
         album_id: albumId,
         page_token: nextPageToken || '',
-      }, {
-        headers: {
-          'x-dzway-pwd': this.password,
-        },
       })
 
       if (albumId !== this.albumId) {
@@ -110,14 +146,17 @@ class Image extends BaseStore {
           width: Number(item.mediaMetadata.width),
           height: Number(item.mediaMetadata.height),
           mimeType: item.mimeType,
+          fetching: false,
           data: null,
         })))),
       ])
 
       await this.fetch(albumId, res.data.nextPageToken || '')
     } catch (err) {
-      await this.fetchAuth()
-      await this.fetch(albumId, nextPageToken)
+      setTimeout(async (albumId, nextPageToken) => {
+        await this.fetchAuth()
+        await this.fetch(albumId, nextPageToken)
+      }, 1000, albumId, nextPageToken)
     }
   }
 
