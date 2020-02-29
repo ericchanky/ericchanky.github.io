@@ -1,0 +1,22 @@
+name: Build and publish
+
+on:
+  push:
+    branches: 
+      - develop
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Setup Node
+        uses: actions/setup-node@v1
+        with:
+          node-version: '10.x'
+      - uses: actions/checkout@v2
+      - name: Build the site in the jekyll/builder container
+        run: |
+          npm install
+          npm run publish
