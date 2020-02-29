@@ -16,9 +16,15 @@ jobs:
         with:
           node-version: '10.x'
       - uses: actions/checkout@v2
-      - name: Build the site in the jekyll/builder container
+      - name: Build
         run: |
           git config --global user.email "eric.cky715@gmail.com"
           git config --global user.name "Github Action"
           npm install
           npm run publish
+      - name: Deploy
+        uses: JamesIves/github-pages-deploy-action@releases/v3
+        with:
+          ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
+          BRANCH: master # The branch the action should deploy to.
+          FOLDER: public # The folder the action should deploy.

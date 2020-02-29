@@ -60,11 +60,12 @@
   "license": "MIT",
   "scripts": {
     "build": "gatsby build",
+    "build:production": "npm run clean && node version.js && NODE_ENV=production npm run build",
     "develop": "gatsby develop --host=0.0.0.0",
     "start": "npm run develop",
     "serve": "gatsby serve",
     "clean": "gatsby clean",
-    "publish": "npm run clean && node version.js && NODE_ENV=production npm run build && gh-pages -d public -b master",
+    "publish": "npm run build:production && gh-pages -d public -b master",
     "lint": "eslint --ext .ts,.tsx src/**",
     "lint:fix": "npm run lint -- --fix",
     "test": "echo \"Write tests! -> https://gatsby.dev/unit-testing\" && exit 1"
