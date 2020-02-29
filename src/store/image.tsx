@@ -1,7 +1,7 @@
 import Axios from 'axios'
 import { addHours, isBefore } from 'date-fns'
 import { shuffle } from 'lodash'
-import { action, computed, observable, reaction } from 'mobx'
+import { action, computed, observable, reaction, when } from 'mobx'
 import uuid from 'uuid/v4'
 
 import albumList from '../utils/list.json'
@@ -23,19 +23,12 @@ const api = Axios.create({
   timeout: 30000,
 })
 
-// const fetchData = async (src: string, mimeType: string) => {
-//   // const url = encodeURIComponent(src)
-//   const res = await Axios.get(src, {
-//     responseType: 'arraybuffer',
-//   })
-//   const encoded = Buffer.from(res.data, 'binary').toString('base64')
-//   return `data:${mimeType};base64,${encoded}`
-// }
+const URL = typeof window !== 'undefined' ? window.webkitURL || window.URL : undefined
 
 class Image extends BaseStore {
   @observable public list = observable.array<ImageItem>([])
-  private auth = { token: '', expiry: new Date }
   @observable private albumId = ''
+  private auth = { token: '', expiry: new Date }
   private password = ''
   private preload = 0
   private subfix: 'w2048' | 'dv' = 'w2048'
@@ -50,10 +43,21 @@ class Image extends BaseStore {
 
     reaction(() => this.list.slice(0, this.preload).map((item) => item.id), (ids) => {
       // prefetch data
+      if (this.albumId !== albumList.GYM) { return } // stop fetching image
       this.list.filter((item) => ids.includes(item.id))
         .filter((item) => !item.fetching && !item.data)
         .forEach(this.fetchData)
     }, { delay: 100 })
+
+    when(
+      () => isBefore(this.auth.expiry, this.now),
+      () => {
+        if (this.albumId === albumList['GYM']) {
+          this.init({ title: 'GYM' })
+        }
+        this.init({})
+      },
+    )
   }
 
   @computed
@@ -69,8 +73,11 @@ class Image extends BaseStore {
     const res = await Axios.get(`https://dzway.herokuapp.com/proxy?src=${encodeURIComponent(item.url)}`, {
       responseType: 'arraybuffer',
     })
-    const encoded = Buffer.from(res.data, 'binary').toString('base64')
-    item.data = `data:${item.mimeType};base64,${encoded}`
+    const buffer = new Uint8Array(res.data)
+    const blob = new Blob([buffer], { type: item.mimeType })
+    item.data = URL && URL.createObjectURL(blob)
+    // const encoded = Buffer.from(res.data, 'binary').toString('base64')
+    // item.data = `data:${item.mimeType};base64,${encoded}`
     item.fetching = false
   }
 
@@ -88,15 +95,21 @@ class Image extends BaseStore {
       // prevent false swipe
       return
     }
+    if (this.list[0] && this.list[0].data) {
+      URL && URL.revokeObjectURL(this.list[0].data)
+    }
     this.list.replace(this.list.slice(1))
   }
 
   @action.bound
-  public init( { password, preload = 5, title, subfix = 'w2048' }: { password: string, preload: number, title?: keyof typeof albumList, subfix?: 'w2048' | 'dv' }) {
-    this.password = password
+  public init({ password, title, preload = 5, subfix = 'w2048' }: { password?: string, preload?: number, title?: keyof typeof albumList, subfix?: 'w2048' | 'dv' }) {
+    if (password) {
+      this.password = password
+    }
     this.preload = preload
     this.subfix = subfix
     this.albumId = this.getAlbumId(title)
+    this.list = observable.array<ImageItem>([])
   }
 
   @computed

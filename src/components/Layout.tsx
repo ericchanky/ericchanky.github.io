@@ -6,6 +6,7 @@ import Brightness7Icon from '@material-ui/icons/Brightness7'
 import GitHubIcon from '@material-ui/icons/GitHub'
 import MenuIcon from '@material-ui/icons/Menu'
 import { observer } from 'mobx-react'
+import qs from 'qs'
 import React from 'react'
 import Hammer from 'react-hammerjs'
 import Helmet, { HelmetProps } from 'react-helmet'
@@ -17,7 +18,7 @@ import MenuDialog from './MenuDialog'
 
 const titleTemplate = (t: string) => `${t} | Tools`
 
-const lightTheme = createMuiTheme({
+const lightTheme = (raw: boolean) => createMuiTheme({
   typography: {
     fontFamily: 'Nunito, "LiHei Pro", "Microsoft JhengHei", sans-serif',
     fontSize: 14,
@@ -31,6 +32,9 @@ const lightTheme = createMuiTheme({
       main: deepPurple[600],
       contrastText: '#fff',
     },
+    background: {
+      default: raw ? 'rgba(0,0,0,0)' : undefined,
+    },
   },
   overrides: {
     MuiCssBaseline: {
@@ -43,7 +47,7 @@ const lightTheme = createMuiTheme({
   },
 })
 
-const darkTheme = createMuiTheme({
+const darkTheme = (raw: boolean) => createMuiTheme({
   typography: {
     fontFamily: 'Nunito, "LiHei Pro", "Microsoft JhengHei", sans-serif',
     fontSize: 14,
@@ -62,8 +66,8 @@ const darkTheme = createMuiTheme({
       secondary: '#aaa',
     },
     background: {
-      paper: '#222',
-      default: '#222',
+      paper: '#444',
+      default: raw ? 'rgba(0,0,0,0)' : '#222',
     },
   },
   overrides: {
@@ -82,10 +86,6 @@ const darkTheme = createMuiTheme({
   },
 })
 
-const generateClassName = createGenerateClassName({
-  productionPrefix: 'tl',
-})
-
 interface Props extends HelmetProps {
   disableHeader?: boolean
   theme?: 'dark' | 'light'
@@ -100,18 +100,31 @@ const useStyles = makeStyles((theme) => ({
   },
 }))
 
+const generateClassName = createGenerateClassName({
+  disableGlobal: true,
+  productionPrefix: 'c',
+})
+
 export const withLayout = (Component: () => JSX.Element, { title = 'Home Page', disableHeader = false, theme, ...props }: Props) => {
   const Layout = () => {
     const { main, menuButton } = useStyles()
     const { config } = React.useContext(storeContext)
-  
+
     const [open, setOpen] = React.useState(false)
     const [ready, setReady] = React.useState(false)
-  
+    const [raw, setRaw] = React.useState(false)
+
     React.useEffect(() => {
       document.title = titleTemplate(title)
     }, [])
-  
+
+    React.useEffect(() => {
+      const jssStyles = document.querySelector('#jss-server-side')
+      if (jssStyles && jssStyles.parentElement) {
+        jssStyles.parentElement.removeChild(jssStyles)
+      }
+    }, [])
+
     React.useEffect(() => {
       persist().then(() => {
         setReady(true)
@@ -120,7 +133,6 @@ export const withLayout = (Component: () => JSX.Element, { title = 'Home Page', 
 
     // const pageHide = React.useCallback(() => setReady(false), [])
     // const pageShow = React.useCallback(() => {
-    //   alert('asdfasdfas')
     //   setReady(true)
     // }, [])
 
@@ -133,12 +145,12 @@ export const withLayout = (Component: () => JSX.Element, { title = 'Home Page', 
     //     window.removeEventListener('visibilitychange', pageShow)
     //   }
     // }, [pageHide, pageShow])
-  
+
     const openGithub = React.useCallback(() => {
       if (typeof window === 'undefined') { return }
       window.open('https://github.com/ericchanky/ericchanky.github.io', '__blank')
     }, [])
-  
+
     const selectedTheme = React.useMemo(() => {
       if (theme) { return theme }
       return config.theme
@@ -155,11 +167,24 @@ export const withLayout = (Component: () => JSX.Element, { title = 'Home Page', 
         emitter.off(Actions.SWIPE_DOWN, toggleMenu)
       }
     }, [toggleMenu])
-  
+
+    React.useEffect(() => {
+      // toggle auto mode
+      const query = qs.parse(location.search.substring(1))
+      if (query.auto) {
+        setRaw(true)
+      }
+    }, [])
+
+    const customizedTheme = React.useMemo(() => {
+      if (selectedTheme === 'dark') { return darkTheme(raw) }
+      return lightTheme(raw)
+    }, [raw, selectedTheme])
+
     return (
-      <storeContext.Provider value={store}>
-        <StylesProvider generateClassName={generateClassName}>
-          <ThemeProvider theme={selectedTheme === 'dark' ? darkTheme : lightTheme }>
+      <StylesProvider generateClassName={generateClassName}>
+        <storeContext.Provider value={store}>
+          <ThemeProvider theme={customizedTheme}>
             <Hammer
               direction="DIRECTION_ALL"
               onSwipe={(evt) => {
@@ -241,8 +266,8 @@ export const withLayout = (Component: () => JSX.Element, { title = 'Home Page', 
               </Box>
             </Hammer>
           </ThemeProvider>
-        </StylesProvider>
-      </storeContext.Provider>
+        </storeContext.Provider>
+      </StylesProvider>
     )
   }
 

@@ -13,14 +13,16 @@ interface PhraseItem {
 class Phrase extends BaseStore {
   @observable public list = observable.array<PhraseItem>([], { name: 'list' })
   @date @observable public nextUpdate = new Date
-  @observable public current = { index: 0, next: new Date }
+  @observable public index = 0
+  @date @observable public nextPhrase = new Date
 
   constructor() {
     super()
     when(
-      () => isBefore(this.current.next, new Date),
+      () => isBefore(this.nextPhrase, this.now),
       () => this.set({
-        current: { index: rand(this.list.length), next: addHours(new Date, 1) },
+        index: rand(this.list.length),
+        nextPhrase: addHours(new Date, 1),
       }),
     )
   }
@@ -28,7 +30,7 @@ class Phrase extends BaseStore {
   @computed
   public get item() {
     if (this.list.length === 0) { return null }
-    return this.list[this.current.index]
+    return this.list[this.index]
   }
 }
 

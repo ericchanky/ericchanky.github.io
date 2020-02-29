@@ -11,17 +11,24 @@ import ImageBox from './ImageBox'
 interface Props extends AuthProps {
   hideBackground?: boolean
   hideForeground?: boolean
+  raw?: boolean
 }
 
 interface StyleProps {
   offset: number
   transform: string
+  // foreground: string,
+  // background: string,
 }
 
 const useStyles = makeStyles((theme) => ({
   '@keyframes backgroundScale': {
     '0%': {
       transform: 'scale(1)',
+      animationTimingFunction: 'ease-in',
+    },
+    '25%': {
+      transform: 'scale(0.95)',
       animationTimingFunction: 'ease-in',
     },
     '65%': {
@@ -39,12 +46,16 @@ const useStyles = makeStyles((theme) => ({
     width: '100vw',
     height: '100vh',
   },
+  hidden: {
+    display: 'none',
+  },
   foreground: ({ transform }: StyleProps) => ({
     width: '100%',
     height: '100%',
     backgroundSize: 'contain',
     backgroundRepeat: 'no-repeat',
     backgroundPosition: 'center',
+    // backgroundImage: `url(${foreground})`,
     transform,
     transition: theme.transitions.create(['background'], {
       duration: theme.transitions.duration.complex,
@@ -64,21 +75,18 @@ const useStyles = makeStyles((theme) => ({
       easing: theme.transitions.easing.easeInOut,
       delay: 250,
     }),
-    '&::after': {
-      content: '""',
-      position: 'absolute',
-      top: 0,
-      left: 0,
-      width: '100%',
-      height: '100%',
-      backgroundColor: 'rgba(8, 8, 8, 0.92)',
-    },
   }),
+  darker: {
+    filter: 'brightness(12%)',
+  },
+  wallMode: {
+    backgroundPosition: 'left !important',
+  },
 }))
 
 const PRELOAD = 5
 
-const Image = ({ password, hideBackground = false, hideForeground = false }: Props) => {
+const Image = ({ password, hideBackground = false, hideForeground = false, raw = false }: Props) => {
   const theme = useTheme()
   const isLargerThanMD = useMediaQuery(theme.breakpoints.up('md'))
   const { image } = React.useContext(storeContext)
@@ -185,7 +193,7 @@ const Image = ({ password, hideBackground = false, hideForeground = false }: Pro
     }
   }, [onDoubleTap, resetAttr])
 
-  const { container, animate, foreground, background } = useStyles({
+  const { container, hidden, animate, foreground, background, darker, wallMode } = useStyles({
     offset,
     transform,
   })
@@ -203,12 +211,28 @@ const Image = ({ password, hideBackground = false, hideForeground = false }: Pro
   }, [reset])
 
   return (
-    <Box className={container}>
-      {second && isLargerThanMD && !hideBackground && (
-        <ImageBox className={classNames(background, animate)} src={second.data} />
+    <Box className={classNames(container)}>
+      {image.list.slice(0, PRELOAD).map((item) => (
+        <img
+          key={item.id}
+          src={item.url || ''}
+          className={hidden}
+          onError={reset}
+        />
+      ))}
+      {second && isLargerThanMD && !hideBackground && !raw && (
+        <ImageBox
+          className={classNames(background, animate, darker)}
+          src={second.url}
+        />
       )}
       {first && !hideForeground && (
-        <ImageBox className={foreground} src={first.data} />
+        <ImageBox
+          className={classNames(foreground, {
+            [wallMode]: raw,
+          })}
+          src={first.url}
+        />
       )}
     </Box>
   )

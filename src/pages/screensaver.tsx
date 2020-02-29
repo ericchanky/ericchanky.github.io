@@ -4,6 +4,7 @@ import csv from 'csvtojson'
 import { format, isBefore } from 'date-fns'
 import { addHours } from 'date-fns/esm'
 import { observer } from 'mobx-react'
+import qs from 'qs'
 import React from 'react'
 
 import { withLayout } from '../components/Layout'
@@ -12,7 +13,6 @@ import { storeContext } from '../store'
 const useStyles = makeStyles((theme) => ({
   main: {
     position: 'relative',
-    backgroundColor: 'black',
     width: '100vw',
     height: '100vh',
     color: 'white',
@@ -49,6 +49,7 @@ const Phrase = () => {
   const { phrase } = React.useContext(storeContext)
 
   const [now, setNow] = React.useState(new Date)
+  const [config, setConfig] = React.useState({ raw: false })
 
   const fetch = React.useCallback(async () => {
     if (isBefore(new Date, phrase.nextUpdate)) { return }
@@ -57,7 +58,10 @@ const Phrase = () => {
     csv({ headers: ['phrase', 'author'], delimiter: '\t' })
       .fromString(res.data)
       .then((data) => {
-        phrase.set({ list: data as unknown as typeof phrase['list'], nextUpdate: addHours(new Date, 6) })
+        phrase.set({
+          list: data as unknown as typeof phrase['list'], nextUpdate: addHours(new Date, 6),
+          nextPhrase: new Date,
+        })
       })
   }, [phrase])
 
@@ -70,6 +74,14 @@ const Phrase = () => {
     return () => clearInterval(interval)
   }, [])
 
+  React.useEffect(() => {
+    // toggle auto mode
+    const query = qs.parse(location.search.substring(1))
+    if (query.auto) {
+      setConfig((c) => ({ ...c, raw: true }))
+    }
+  }, [])
+
   return (
     <Box className={main}>
       <Box className={phraseContainer}>
@@ -79,9 +91,11 @@ const Phrase = () => {
           <Typography className={phraseSecondary}>— {phrase.item.author}</Typography>
         )}
       </Box>
-      <Box className={time}>
-        <Typography variant="h5" className={timeFont}>{format(now, 'yyyy-MM-dd HH:mm:ss')}</Typography>
-      </Box>
+      {!config.raw && (
+        <Box className={time}>
+          <Typography variant="h5" className={timeFont}>{format(now, 'yyyy-MM-dd HH:mm:ss')}</Typography>
+        </Box>
+      )}
     </Box>
   )
 }

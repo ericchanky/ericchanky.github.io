@@ -5,6 +5,7 @@ import CachedIcon from '@material-ui/icons/Cached'
 import RemoveIcon from '@material-ui/icons/Remove'
 import SettingsIcon from '@material-ui/icons/Settings'
 import { observer } from 'mobx-react'
+import qs from 'qs'
 import React from 'react'
 
 import { AuthProps, withAuth } from '../components/Auth'
@@ -37,6 +38,7 @@ const Wallpaper = ({ password }: Props) => {
   const [type, setType] = React.useState<'girl' | 'gym'>('girl')
   const [config, setConfig] = React.useState({
     interval: 0,
+    raw: false,
   })
 
   React.useEffect(() => {
@@ -70,21 +72,30 @@ const Wallpaper = ({ password }: Props) => {
 
   const changeType = React.useCallback((t: typeof type) => {
     setType(t)
-    image.list.replace([])
-  }, [image.list, type])
+  }, [type])
+
+  React.useEffect(() => {
+    // toggle auto mode
+    const query = qs.parse(location.search.substring(1))
+    if (query.auto) {
+      setConfig((c) => ({ ...c, interval: 8, raw: true }))
+    }
+  }, [])
 
   return (
     <Box>
-      <Awake />
-      {type === 'girl' && <Image password={password} />}
+      {!config.raw && <Awake />}
+      {type === 'girl' && <Image password={password} raw={config.raw} />}
       {type === 'gym' && <Video password={password} />}
-      <IconButton
-        color="secondary"
-        className={settingButton}
-        onClick={() => setOpen(true)}
-      >
-        <SettingsIcon />
-      </IconButton>
+      {!config.raw && (
+        <IconButton
+          color="secondary"
+          className={settingButton}
+          onClick={() => setOpen(true)}
+        >
+          <SettingsIcon />
+        </IconButton>
+      )}
       <Drawer
         open={open}
         onClose={() => setOpen(false)}

@@ -1,6 +1,7 @@
 import { Box, Grid, IconButton, InputBase, makeStyles } from '@material-ui/core'
 import Axios from 'axios'
 import { observer } from 'mobx-react'
+import qs from 'qs'
 import React from 'react'
 
 import { storeContext } from '../store'
@@ -57,6 +58,14 @@ export const withAuth = (Component: (props: AuthProps) => JSX.Element, { require
   const { config, image } = React.useContext(storeContext)
 
   const [password, setPassword] = React.useState(config.password)
+
+  React.useEffect(() => {
+    // init password by query params
+    const query = qs.parse(location.search.substring(1))
+    if (query.password) {
+      setPassword(query.password)
+    }
+  }, [])
 
   React.useEffect(() => {
     // touch server
