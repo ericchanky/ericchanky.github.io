@@ -7,12 +7,16 @@ import { AuthProps } from './Auth'
 
 interface Props extends AuthProps {}
 
-const PRELOAD = 2
+const PRELOAD = 3
 
 const useStyles = makeStyles(() => ({
   container: {
     width: '100vw',
     height: '100vh',
+  },
+  player: {
+    width: '100%',
+    height: '100%',
   },
 }))
 
@@ -21,7 +25,7 @@ const Video = ({ password }: Props) => {
   const { image } = React.useContext(storeContext)
   const { first } = image
 
-  const { container } = useStyles()
+  const { container, player } = useStyles()
 
   const reset = React.useCallback(() => {
     image.init({ password, preload: PRELOAD, title: 'GYM', subfix: 'dv' })
@@ -44,7 +48,7 @@ const Video = ({ password }: Props) => {
     <Box className={container}>
       <video
         ref={videoRef}
-        style={{ height: '100%', width: '100%' }}
+        className={player}
         playsInline
         controls={false}
         onEnded={next}

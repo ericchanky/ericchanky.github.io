@@ -54,8 +54,9 @@ class Image extends BaseStore {
       () => {
         if (this.albumId === albumList['GYM']) {
           this.init({ title: 'GYM' })
+        } else {
+          this.init({})
         }
-        this.init({})
       },
     )
   }

@@ -100,12 +100,11 @@ const useStyles = makeStyles((theme) => ({
   },
 }))
 
-const generateClassName = createGenerateClassName({
-  disableGlobal: true,
-  productionPrefix: 'c',
-})
-
 export const withLayout = (Component: () => JSX.Element, { title = 'Home Page', disableHeader = false, theme, ...props }: Props) => {
+  const generateClassName = createGenerateClassName({
+    disableGlobal: false,
+  })
+
   const Layout = () => {
     const { main, menuButton } = useStyles()
     const { config } = React.useContext(storeContext)
