@@ -68,7 +68,7 @@ const useStyles = makeStyles((theme) => ({
       position: 'absolute',
       width: '100%',
       height: '100%',
-      backgroundColor: fade('#000', 0.83),
+      backgroundColor: fade('#000', 0.73),
     } : undefined,
   }),
   background: ({ offset }: StyleProps) => ({
@@ -222,7 +222,7 @@ const Image = ({ password, hideBackground = false, hideForeground = false, raw =
 
   return (
     <Box className={classNames(container)}>
-      {image.list.slice(0, PRELOAD).map((item) => (
+      {!wallpaper && image.list.slice(0, PRELOAD).map((item) => (
         <img
           key={item.id}
           src={item.url || ''}

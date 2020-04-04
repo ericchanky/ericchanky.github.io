@@ -138,7 +138,6 @@ const EditPost = ({ dialogProps, post, fetch, onClose }: Props) => {
           placeholder="Write something..."
           keyBindingFn={(evt) => {
             if (evt.keyCode === 9) {
-              console.log('dsfas')
               const ncs = Modifier.insertText(editorState.getCurrentContent(), editorState.getSelection(), '    ')
               setEditorState(EditorState.push(editorState, ncs, 'insert-fragment'))
               return null
