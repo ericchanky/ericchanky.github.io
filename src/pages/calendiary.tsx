@@ -98,15 +98,15 @@ const CalendarPage = ({ password: passcode }: Props) => {
     })
   }, [posts])
 
-  const password = React.useMemo(() => {
-    return qs.parse(location.search.substring(1)).password as string
+  const wallpaper = React.useMemo(() => {
+    return qs.parse(location.search.substring(1)).wallpaper as string
   }, [])
 
   return (
     <Box>
-      {password && (
+      {wallpaper && (
         <Box style={{ position: 'fixed' }}>
-          <Image password={password} raw wallpaper />
+          <Image password={wallpaper} raw wallpaper />
         </Box>
       )}
       <Calendar
