@@ -2,6 +2,7 @@ import Axios from 'axios'
 import { addHours, isBefore } from 'date-fns'
 import { shuffle } from 'lodash'
 import { action, computed, observable, reaction, when } from 'mobx'
+import { date, ignore } from 'mobx-sync'
 import uuid from 'uuid/v4'
 
 import albumList from '../utils/list.json'
@@ -26,12 +27,15 @@ const api = Axios.create({
 const URL = typeof window !== 'undefined' ? window.webkitURL || window.URL : undefined
 
 class Image extends BaseStore {
-  @observable public list = observable.array<ImageItem>([])
-  @observable private albumId = ''
+  @observable public wallpaperList = observable.array<ImageItem>([])
+  @ignore @observable public list = observable.array<ImageItem>([])
+  @ignore @observable private albumId = ''
+  @date @observable public wallpaperTimestamp = new Date
   private auth = { token: '', expiry: new Date }
   private password = ''
   private preload = 0
   private subfix: 'w2048' | 'dv' = 'w2048'
+  private wallpaper = false
 
   public constructor() {
     super()
@@ -103,7 +107,7 @@ class Image extends BaseStore {
   }
 
   @action.bound
-  public init({ password, title, preload = 5, subfix = 'w2048' }: { password?: string, preload?: number, title?: keyof typeof albumList, subfix?: 'w2048' | 'dv' }) {
+  public init({ password, title, preload = 5, subfix = 'w2048', wallpaper = false }: { password?: string, preload?: number, title?: keyof typeof albumList, subfix?: 'w2048' | 'dv', wallpaper?: boolean }) {
     if (password) {
       this.password = password
     }
@@ -111,6 +115,7 @@ class Image extends BaseStore {
     this.subfix = subfix
     this.albumId = this.getAlbumId(title)
     this.list = observable.array<ImageItem>([])
+    this.wallpaper = wallpaper
   }
 
   @computed
@@ -134,6 +139,11 @@ class Image extends BaseStore {
   }
 
   private async fetch(albumId: string, nextPageToken: string | null) {
+    if (this.wallpaper && this.wallpaperList.length > 0 && isBefore(new Date, addHours(this.wallpaperTimestamp, 1))) {
+      this.list.replace(shuffle(this.wallpaperList))
+      return
+    }
+
     if (nextPageToken === '') { return }
     if (!albumId) { return }
 
@@ -154,22 +164,34 @@ class Image extends BaseStore {
 
       this.list.replace([
         ...this.list.slice(0, this.preload),
-        ... shuffle(this.list.slice(this.preload).concat(res.data.mediaItems.map((item: any) => ({
-          id: uuid(),
-          url: `${item.baseUrl}=${this.subfix}`,
-          width: Number(item.mediaMetadata.width),
-          height: Number(item.mediaMetadata.height),
-          mimeType: item.mimeType,
-          fetching: false,
-          data: null,
-        })))),
+        ... shuffle(this.list.slice(this.preload).concat((res.data.mediaItems as any[])
+          .map((item) => ({
+            id: uuid(),
+            url: `${item.baseUrl}=${this.subfix}`,
+            width: Number(item.mediaMetadata.width),
+            height: Number(item.mediaMetadata.height),
+            mimeType: item.mimeType,
+            fetching: false,
+            data: null,
+          }))
+          .filter((item) => {
+            if (this.wallpaper) { return item.width > item.height }
+            return true
+          }),
+        )),
       ])
+
+      // persist it
+      if (this.wallpaper) {
+        this.wallpaperList.replace(this.list)
+        this.wallpaperTimestamp = new Date
+      }
 
       await this.fetch(albumId, res.data.nextPageToken || '')
     } catch (err) {
-      setTimeout(async (albumId, nextPageToken) => {
+      setTimeout(async (id, token) => {
         await this.fetchAuth()
-        await this.fetch(albumId, nextPageToken)
+        await this.fetch(id, token)
       }, 1000, albumId, nextPageToken)
     }
   }

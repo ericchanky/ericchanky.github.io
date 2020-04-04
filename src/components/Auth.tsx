@@ -8,6 +8,7 @@ import { storeContext } from '../store'
 
 interface Props {
   required?: boolean
+  passthrough?: boolean
 }
 
 export interface AuthProps {
@@ -28,11 +29,11 @@ const useStyles = makeStyles((theme) => ({
   item: {
     textAlign: 'center',
   },
-  button: {
-    border: '2px solid #fff',
+  button: ({ t }: { t: 'light' | 'dark' }) => ({
+    border: t === 'light' ? '2px solid rgba(40,40,40,0.6)' : '2px solid #fff',
     padding: '2rem',
     position: 'relative',
-  },
+  }),
   label: {
     position: 'absolute',
     top: 0,
@@ -53,9 +54,9 @@ const useStyles = makeStyles((theme) => ({
 // Password length
 const PasswordLength = 6
 
-export const withAuth = (Component: (props: AuthProps) => JSX.Element, { required = false }: Props) => observer(() => {
-  const { container, verticle, button, label, item, input } = useStyles()
+export const withAuth = (Component: (props: AuthProps) => JSX.Element, { required = false, passthrough = false }: Props) => observer(() => {
   const { config, image } = React.useContext(storeContext)
+  const { container, verticle, button, label, item, input } = useStyles({ t: config.theme })
 
   const [password, setPassword] = React.useState(config.password)
 
@@ -73,6 +74,10 @@ export const withAuth = (Component: (props: AuthProps) => JSX.Element, { require
   }, [])
 
   const validatePassword = React.useCallback(async (pw: string) => {
+    if (passthrough) {
+      return config.set({ password: pw })
+    }
+
     try {
       await image.fetchAuth(pw)
       config.set({ password: pw })

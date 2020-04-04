@@ -10,7 +10,7 @@ import { phrase } from './phrase'
 class Store extends BaseStore {
   @observable public config = config
   @observable public phrase = phrase
-  @ignore @observable public image = image
+  @observable public image = image
 }
 
 const store = new Store

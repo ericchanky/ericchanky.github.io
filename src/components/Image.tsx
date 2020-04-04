@@ -1,4 +1,4 @@
-import { Box, makeStyles, useMediaQuery, useTheme } from '@material-ui/core'
+import { Box, fade, makeStyles, useMediaQuery, useTheme } from '@material-ui/core'
 import classNames from 'classnames'
 import { observer } from 'mobx-react'
 import React from 'react'
@@ -12,11 +12,13 @@ interface Props extends AuthProps {
   hideBackground?: boolean
   hideForeground?: boolean
   raw?: boolean
+  wallpaper?: boolean
 }
 
 interface StyleProps {
   offset: number
   transform: string
+  wallpaper: boolean
   // foreground: string,
   // background: string,
 }
@@ -49,10 +51,10 @@ const useStyles = makeStyles((theme) => ({
   hidden: {
     display: 'none',
   },
-  foreground: ({ transform }: StyleProps) => ({
+  foreground: ({ transform, wallpaper }: StyleProps) => ({
     width: '100%',
     height: '100%',
-    backgroundSize: 'contain',
+    backgroundSize: wallpaper ? 'cover' : 'contain',
     backgroundRepeat: 'no-repeat',
     backgroundPosition: 'center',
     // backgroundImage: `url(${foreground})`,
@@ -61,6 +63,13 @@ const useStyles = makeStyles((theme) => ({
       duration: theme.transitions.duration.complex,
       easing: theme.transitions.easing.easeInOut,
     }),
+    '&:before': wallpaper ? {
+      content: '""',
+      position: 'absolute',
+      width: '100%',
+      height: '100%',
+      backgroundColor: fade('#000', 0.83),
+    } : undefined,
   }),
   background: ({ offset }: StyleProps) => ({
     position: 'absolute',
@@ -86,7 +95,7 @@ const useStyles = makeStyles((theme) => ({
 
 const PRELOAD = 5
 
-const Image = ({ password, hideBackground = false, hideForeground = false, raw = false }: Props) => {
+const Image = ({ password, hideBackground = false, hideForeground = false, raw = false, wallpaper = false }: Props) => {
   const theme = useTheme()
   const isLargerThanMD = useMediaQuery(theme.breakpoints.up('md'))
   const { image } = React.useContext(storeContext)
@@ -196,6 +205,7 @@ const Image = ({ password, hideBackground = false, hideForeground = false, raw =
   const { container, hidden, animate, foreground, background, darker, wallMode } = useStyles({
     offset,
     transform,
+    wallpaper,
   })
 
   React.useEffect(() => {
@@ -203,8 +213,8 @@ const Image = ({ password, hideBackground = false, hideForeground = false, raw =
   }, [first, resetAttr])
 
   const reset = React.useCallback(() => {
-    image.init({ password, preload: PRELOAD })
-  }, [image, password])
+    image.init({ password, preload: PRELOAD, wallpaper })
+  }, [image, password, wallpaper])
 
   React.useEffect(() => {
     reset()
