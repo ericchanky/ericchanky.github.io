@@ -29,6 +29,12 @@ const PostToolbar = ({ label, date, onNavigate }: ToolbarProps) => {
       setOpenCodePad(false)
     }
 
+    if (password === '000') {
+      calendiary.set({ wallpaperCode: '' })
+      setPassword('')
+      setOpenCodePad(false)
+    }
+
     if (password.length === 6) {
       calendiary.set({ wallpaperCode: password })
       setPassword('')

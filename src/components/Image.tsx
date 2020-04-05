@@ -88,9 +88,6 @@ const useStyles = makeStyles((theme) => ({
   darker: {
     filter: 'brightness(12%)',
   },
-  wallMode: {
-    backgroundPosition: 'left !important',
-  },
 }))
 
 const PRELOAD = 5
@@ -202,7 +199,7 @@ const Image = ({ password, hideBackground = false, hideForeground = false, raw =
     }
   }, [onDoubleTap, resetAttr])
 
-  const { container, hidden, animate, foreground, background, darker, wallMode } = useStyles({
+  const { container, hidden, animate, foreground, background, darker } = useStyles({
     offset,
     transform,
     wallpaper,
@@ -238,9 +235,7 @@ const Image = ({ password, hideBackground = false, hideForeground = false, raw =
       )}
       {first && !hideForeground && (
         <ImageBox
-          className={classNames(foreground, {
-            [wallMode]: raw,
-          })}
+          className={foreground}
           src={first.url}
         />
       )}

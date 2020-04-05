@@ -33,6 +33,9 @@ const localizer = dateFnsLocalizer({
 const useStyles = makeStyles((theme: Theme) => {
   return {
     '@global': {
+      'body': {
+        overflow: 'hidden',
+      },
       '.rbc-row-content': {
         maxHeight: '100%',
       },
