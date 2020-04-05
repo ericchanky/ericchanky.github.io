@@ -119,13 +119,24 @@ class Image extends BaseStore {
   }
 
   @computed
+  public get filteredList() {
+    if (this.wallpaper) {
+      if (window.innerWidth < 800) {
+        return this.list.filter((item) => item.height > item.width)
+      }
+      return this.list.filter((item) => item.width > item.height)
+    }
+    return this.list
+  }
+
+  @computed
   public get first() {
-    return this.list.find((_, i) => i === 0) || null
+    return this.filteredList.find((_, i) => i === 0) || null
   }
 
   @computed
   public get second() {
-    return this.list.find((_, i) => i === 1) || null
+    return this.filteredList.find((_, i) => i === 1) || null
   }
 
   @action.bound
@@ -173,11 +184,7 @@ class Image extends BaseStore {
             mimeType: item.mimeType,
             fetching: false,
             data: null,
-          }))
-          .filter((item) => {
-            if (this.wallpaper) { return item.width > item.height }
-            return true
-          }),
+          })),
         )),
       ])
 
