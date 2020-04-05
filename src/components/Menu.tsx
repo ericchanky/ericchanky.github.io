@@ -8,6 +8,7 @@ const routes = [
   { key: 'encode-url', name: 'Encode/Decode URL', url: '/encodeURL' },
   { key: 'json-viewer', name: 'JSON Viewer', url: '/jsonViewer' },
   { key: 'timer', name: 'Timer', url: '/timer' },
+  { key: 'calendiary', name: 'Calendiary', url: '/calendiary' },
 ]
 
 interface Props {

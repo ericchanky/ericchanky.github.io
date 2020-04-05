@@ -57,9 +57,9 @@ class Image extends BaseStore {
       () => isBefore(this.auth.expiry, this.now),
       () => {
         if (this.albumId === albumList['GYM']) {
-          this.init({ title: 'GYM' })
+          this.init({ title: 'GYM', preload: this.preload })
         } else {
-          this.init({})
+          this.init({ preload: this.preload, wallpaper: this.wallpaper })
         }
       },
     )
