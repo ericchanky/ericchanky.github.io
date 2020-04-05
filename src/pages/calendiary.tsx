@@ -1,11 +1,11 @@
 import 'react-big-calendar/lib/css/react-big-calendar.css'
 
-import { Box, fade, makeStyles, Theme } from '@material-ui/core'
-import { endOfMonth, format, formatISO, getDay, parse, startOfMonth, startOfWeek } from 'date-fns'
+import { Box, fade, makeStyles, Theme, useMediaQuery, useTheme } from '@material-ui/core'
+import { endOfDay, endOfMonth, format, formatISO, getDay, parseISO, startOfDay, startOfMonth, startOfWeek } from 'date-fns'
 import enUS from 'date-fns/locale/en-US'
 import qs from 'qs'
 import React from 'react'
-import { Calendar, dateFnsLocalizer } from 'react-big-calendar'
+import { Calendar, CalendarProps, dateFnsLocalizer } from 'react-big-calendar'
 
 import { AuthProps, withAuth } from '../components/Auth'
 import EditPost from '../components/Calendiary/EditPost'
@@ -22,7 +22,7 @@ const locales = {
 
 const localizer = dateFnsLocalizer({
   format,
-  parse,
+  parseISO,
   startOfWeek,
   getDay,
   locales,
@@ -59,6 +59,15 @@ const useStyles = makeStyles((theme: Theme) => {
       '.rbc-today': {
         background: `${fade('#eaf6ff', 0.6)}!important`,
       },
+      '.rbc-event': {
+        border: 'none!important',
+      },
+      '.rbc-time-slot, .rbc-timeslot-group': {
+        borderColor: 'transparent!important',
+      },
+      '.rbc-event-label': {
+        display: 'none!important',
+      },
       // '.rbc-header, .rbc-month-view, .rbc-day-bg, .rbc-month-row': {
       //   borderColor: '#000!important',
       // },
@@ -71,6 +80,7 @@ interface Props extends AuthProps {}
 const CalendarPage = ({ password: passcode }: Props) => {
   useStyles()
   const { height } = useDimension()
+  const [view, setView] = React.useState<CalendarProps['view']>('month')
   const [createDialog, setCreateDialog] = React.useState({ open: false, date: new Date() })
   const [editDialog, setEditDialog] = React.useState<{ open: boolean, post?: Partial<CalendiaryPost> }>({ open: false })
   const [posts, setPosts] = React.useState<CalendiaryPost[]>([])
@@ -84,19 +94,29 @@ const CalendarPage = ({ password: passcode }: Props) => {
     fetch()
   }, [fetch])
 
+  const theme = useTheme()
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'))
+  React.useEffect(() => {
+    if (isMobile) {
+      setView('day')
+    } else {
+      setView('month')
+    }
+  }, [isMobile])
+
   const events = React.useMemo(() => {
     return posts.map((post) => {
       return {
         event: {},
         color: post.color,
-        start: post.date,
-        end: post.date,
-        allDay: true,
+        start: startOfDay(new Date(post.date)),
+        end: endOfDay(new Date(post.date)),
+        allDay: !isMobile,
         title: post.text,
         post,
       }
     })
-  }, [posts])
+  }, [isMobile, posts])
 
   const wallpaper = React.useMemo(() => {
     return qs.parse(location.search.substring(1)).wallpaper as string
@@ -113,12 +133,18 @@ const CalendarPage = ({ password: passcode }: Props) => {
         selectable
         localizer={localizer}
         events={events}
+        view={view}
         date={createDialog.date}
         onNavigate={(newDate) => {
           setCreateDialog({ open: createDialog.open, date: newDate })
         }}
         // @ts-ignore
         style={{ height }}
+        formats={{
+          dateFormat: 'd',
+          timeGutterFormat: 'HH:mm',
+          dayHeaderFormat: 'EEE, do MMM yyyy',
+        }}
         components={{
           event: PostEvent,
           toolbar: PostToolbar,
@@ -139,6 +165,7 @@ const CalendarPage = ({ password: passcode }: Props) => {
       />
       {editDialog.post && (
         <EditPost
+          // @ts-ignore
           dialogProps={{ open: editDialog.open }}
           post={editDialog.post}
           fetch={fetch}

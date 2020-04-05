@@ -1,9 +1,10 @@
-import { AppBar, Box, Button, Dialog, DialogActions, DialogContent, DialogProps, fade, IconButton, makeStyles, Theme, Toolbar, Typography, useMediaQuery, useTheme } from '@material-ui/core'
+import { AppBar, Box, Button, Dialog, DialogActions, DialogContent, DialogProps, IconButton, makeStyles, Theme, Toolbar, Typography, useMediaQuery, useTheme } from '@material-ui/core'
 import CloseIcon from '@material-ui/icons/Close'
 import cx from 'classnames'
 import { format, formatISO } from 'date-fns'
-import { ContentState, Editor, EditorState, getDefaultKeyBinding, Modifier } from 'draft-js'
+import { EditorState } from 'draft-js'
 import React from 'react'
+import RichTextEditor, { EditorValue } from 'react-rte'
 import uuid from 'uuid/v4'
 
 import { CalendiaryPost, createPost } from '../../utils/calendiary'
@@ -35,50 +36,31 @@ const useStyles = makeStyles((theme: Theme) => {
       marginRight: theme.spacing(),
       marginBottom: theme.spacing(),
     },
+    editorStyle: {
+      fontFamily: `${theme.typography.fontFamily}!important`,
+      background: 'inherit!important',
+      border: 'none!important',
+    },
     '@global': {
-      '.public-DraftEditorPlaceholder-root': {
-        position: 'absolute',
-        color: fade(theme.palette.text.primary, 0.4),
+      '.public-DraftEditor-content, .public-DraftEditorPlaceholder-root': {
+        padding: '0!important',
       },
       '.public-DraftStyleDefault-block, .public-DraftStyleDefault-ol, .public-DraftStyleDefault-ul': ({ color }: { color: string }) => ({
         color,
-        padding: 0,
       }),
     },
   }
 })
 
-// const BLOCK_TYPES = [
-//   { label: 'H1', style: 'header-one' },
-//   { label: 'H2', style: 'header-two' },
-//   { label: 'H3', style: 'header-three' },
-//   { label: 'H4', style: 'header-four' },
-//   { label: 'H5', style: 'header-five' },
-//   { label: 'H6', style: 'header-six' },
-//   { label: 'Blockquote', style: 'blockquote' },
-//   { label: 'UL', style: 'unordered-list-item' },
-//   { label: 'OL', style: 'ordered-list-item' },
-//   { label: 'Code Block', style: 'code-block' },
-// ]
-
 const EditPost = ({ dialogProps, post, fetch, onClose }: Props) => {
   const theme = useTheme()
-  const isMobile = useMediaQuery(theme.breakpoints.down('md'))
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'))
 
   const [color, setColor] = React.useState(post.color || take(colorPool))
-  const [editorState, setEditorState] = React.useState(EditorState.moveFocusToEnd(EditorState.createWithContent(ContentState.createFromText(post.text || ''))))
+  const [text, setText] = React.useState(EditorValue.createFromState(EditorState.moveFocusToEnd(RichTextEditor.createValueFromString(post.text || '', 'markdown').getEditorState())))
   const [loading, setLoading] = React.useState(false)
 
-  const editorRef = React.createRef<Editor>()
-  React.useEffect(() => {
-    setTimeout(() => {
-      if (!editorRef.current) { return }
-      editorRef.current.focus()
-    }, 0)
-  }, [editorRef])
-
-  const { colorPicker, activeColorPicker } = useStyles({ color })
-
+  const { colorPicker, activeColorPicker, editorStyle } = useStyles({ color })
 
   const date = React.useMemo(() => post.date ? new Date(post.date) : new Date, [post.date])
 
@@ -116,34 +98,13 @@ const EditPost = ({ dialogProps, post, fetch, onClose }: Props) => {
             )
           })}
         </Box>
-        {/* <Box>
-          {BLOCK_TYPES.map((type) => {
-            return (
-              <Typography
-                key={type.label}
-                className={blockPicker}
-                display="inline"
-                onClick={() => setEditorState(RichUtils.toggleBlockType(editorState, type.style))}
-              >
-                {type.label}
-              </Typography>
-            )
-          })}
-        </Box> */}
-        <Editor
-          ref={editorRef}
-          ariaLabel="notes"
-          editorState={editorState}
-          onChange={setEditorState}
+        <RichTextEditor
+          autoFocus
+          className={editorStyle}
+          toolbarStyle={{ margin: 0, border: 'none' }}
           placeholder="Write something..."
-          keyBindingFn={(evt) => {
-            if (evt.keyCode === 9) {
-              const ncs = Modifier.insertText(editorState.getCurrentContent(), editorState.getSelection(), '    ')
-              setEditorState(EditorState.push(editorState, ncs, 'insert-fragment'))
-              return null
-            }
-            return getDefaultKeyBinding(evt)
-          }}
+          value={text}
+          onChange={setText}
         />
       </DialogContent>
       <DialogActions>
@@ -156,7 +117,7 @@ const EditPost = ({ dialogProps, post, fetch, onClose }: Props) => {
               await createPost({
                 id: post.id || uuid(),
                 passcode: post.passcode || '',
-                text: editorState.getCurrentContent().getPlainText(),
+                text: text.toString('markdown'),
                 date: formatISO(date),
                 createdAt: post.createdAt || formatISO(new Date()),
                 updatedAt: post.updatedAt || formatISO(new Date()),
@@ -171,7 +132,7 @@ const EditPost = ({ dialogProps, post, fetch, onClose }: Props) => {
             fetch()
             onClose()
           }}
-          disabled={editorState.getCurrentContent().getPlainText().length === 0 || loading}
+          disabled={text.toString('markdown').length === 0 || loading}
         >
           {post.id ? 'Update' : 'Save'}
         </Button>
