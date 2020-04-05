@@ -32,7 +32,6 @@
     "react-infinite-calendar": "^2.3.1",
     "react-json-view": "^1.19.1",
     "react-markdown": "^4.3.1",
-    "react-rte": "^0.16.1",
     "uuid": "^3.4.0"
   },
   "devDependencies": {
@@ -49,7 +48,6 @@
     "@types/react-hammerjs": "^1.0.1",
     "@types/react-helmet": "^5.0.15",
     "@types/react-infinite-calendar": "^2.3.4",
-    "@types/react-rte": "^0.16.1",
     "@types/uuid": "^3.4.8",
     "@typescript-eslint/eslint-plugin": "^2.26.0",
     "@typescript-eslint/parser": "^2.26.0",

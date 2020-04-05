@@ -1,20 +1,40 @@
 import 'react-infinite-calendar/styles.css'
 
-import { ButtonBase, ButtonGroup, Dialog, Grid, IconButton, Toolbar, Typography, useMediaQuery, useTheme } from '@material-ui/core'
+import { ButtonBase, ButtonGroup, Dialog, DialogContent, Grid, IconButton, Toolbar, Typography, useMediaQuery, useTheme } from '@material-ui/core'
 import KeyboardArrowLeftIcon from '@material-ui/icons/KeyboardArrowLeft'
 import KeyboardArrowRightIcon from '@material-ui/icons/KeyboardArrowRight'
+import WallpaperIcon from '@material-ui/icons/Wallpaper'
 import React from 'react'
 import { ToolbarProps } from 'react-big-calendar'
 import InfiniteCalendar from 'react-infinite-calendar'
 
+import { storeContext } from '../../store'
+import { CodePad } from '../Auth'
+import GridDivider from '../GridDivider'
 import useDimension from '../useDimension'
 
 const PostToolbar = ({ label, date, onNavigate }: ToolbarProps) => {
+  const { calendiary } = React.useContext(storeContext)
   const [open, setOpen] = React.useState(false)
+  const [openCodePad, setOpenCodePad] = React.useState(false)
+  const [password, setPassword] = React.useState('')
 
   const theme = useTheme()
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'))
   const { width, height } = useDimension()
+
+  React.useEffect(() => {
+    if (password === '*') {
+      setPassword('')
+      setOpenCodePad(false)
+    }
+
+    if (password.length === 6) {
+      calendiary.set({ wallpaperCode: password })
+      setPassword('')
+      setOpenCodePad(false)
+    }
+  }, [calendiary, password])
 
   return (
     <Toolbar>
@@ -42,6 +62,13 @@ const PostToolbar = ({ label, date, onNavigate }: ToolbarProps) => {
             <Typography color="secondary" variant="h5">{label}</Typography>
           </ButtonBase>
         </Grid>
+        <GridDivider />
+        <IconButton
+          color="inherit"
+          onClick={() => setOpenCodePad(true)}
+        >
+          <WallpaperIcon />
+        </IconButton>
       </Grid>
       <Dialog
         fullScreen={isMobile}
@@ -58,6 +85,19 @@ const PostToolbar = ({ label, date, onNavigate }: ToolbarProps) => {
             setOpen(false)
           }}
         />
+      </Dialog>
+      <Dialog
+        fullScreen={isMobile}
+        open={openCodePad}
+        onClose={() => setOpenCodePad(false)}
+      >
+        <DialogContent>
+          <CodePad
+            theme={'dark'}
+            password={password}
+            setPassword={setPassword}
+          />
+        </DialogContent>
       </Dialog>
     </Toolbar>
   )

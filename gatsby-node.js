@@ -5,19 +5,21 @@
  */
 
 // You can delete this file if you're not using it
-exports.onCreateWebpackConfig = ({ stage, actions }) => {
-  actions.setWebpackConfig({
-    module: {
-      rules: [
-        {
-          test: /\.mjs$/,
-          type: 'javascript/auto',
-          use: [],
-        },
-      ],
+const path = require('path')
+
+exports.onCreateWebpackConfig = ({ actions, getConfig }) => {
+  const config = getConfig()
+
+  config.module.rules = [
+    {
+      test: /\.mjs$/,
+      type: 'javascript/auto',
+      use: [],
     },
-    resolve: {
-      extensions: ['.ts', '.tsx', '.js', '.jsx', 'json', '.mjs'],
-    },
-  })
+    ...config.module.rules,
+  ]
+
+  config.resolve.alias['react-rte'] = path.resolve('./node_modules/react-rte/lib/RichTextEditor.js')
+
+  actions.replaceWebpackConfig(config)
 }

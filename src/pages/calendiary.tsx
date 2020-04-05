@@ -3,6 +3,7 @@ import 'react-big-calendar/lib/css/react-big-calendar.css'
 import { Box, fade, makeStyles, Theme, useMediaQuery, useTheme } from '@material-ui/core'
 import { endOfDay, endOfMonth, format, formatISO, getDay, parseISO, startOfDay, startOfMonth, startOfWeek } from 'date-fns'
 import enUS from 'date-fns/locale/en-US'
+import { observer } from 'mobx-react'
 import qs from 'qs'
 import React from 'react'
 import { Calendar, CalendarProps, dateFnsLocalizer } from 'react-big-calendar'
@@ -14,6 +15,7 @@ import PostToolbar from '../components/Calendiary/PostToolbar'
 import Image from '../components/Image'
 import { withLayout } from '../components/Layout'
 import useDimension from '../components/useDimension'
+import { storeContext } from '../store'
 import { CalendiaryPost, getAllPost } from '../utils/calendiary'
 
 const locales = {
@@ -79,6 +81,7 @@ interface Props extends AuthProps {}
 
 const CalendarPage = ({ password: passcode }: Props) => {
   useStyles()
+  const { calendiary } = React.useContext(storeContext)
   const { height } = useDimension()
   const [view, setView] = React.useState<CalendarProps['view']>('month')
   const [createDialog, setCreateDialog] = React.useState({ open: false, date: new Date() })
@@ -97,11 +100,7 @@ const CalendarPage = ({ password: passcode }: Props) => {
   const theme = useTheme()
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'))
   React.useEffect(() => {
-    if (isMobile) {
-      setView('day')
-    } else {
-      setView('month')
-    }
+    setView(isMobile ? 'day' : 'month')
   }, [isMobile])
 
   const events = React.useMemo(() => {
@@ -118,15 +117,18 @@ const CalendarPage = ({ password: passcode }: Props) => {
     })
   }, [isMobile, posts])
 
-  const wallpaper = React.useMemo(() => {
-    return qs.parse(location.search.substring(1)).wallpaper as string
-  }, [])
+  React.useEffect(() => {
+    const code = qs.parse(location.search.substring(1)).wallpaper
+    if (code) {
+      calendiary.set({ wallpaperCode: code })
+    }
+  }, [calendiary])
 
   return (
     <Box>
-      {wallpaper && (
+      {calendiary.wallpaperCode && (
         <Box style={{ position: 'fixed' }}>
-          <Image password={wallpaper} raw wallpaper />
+          <Image password={calendiary.wallpaperCode} raw wallpaper />
         </Box>
       )}
       <Calendar
@@ -143,7 +145,7 @@ const CalendarPage = ({ password: passcode }: Props) => {
         formats={{
           dateFormat: 'd',
           timeGutterFormat: 'HH:mm',
-          dayHeaderFormat: 'EEE, do MMM yyyy',
+          dayHeaderFormat: 'EEE, do MMM',
         }}
         components={{
           event: PostEvent,
@@ -176,7 +178,7 @@ const CalendarPage = ({ password: passcode }: Props) => {
   )
 }
 
-export default withLayout(withAuth(CalendarPage, { required: true, passthrough: true }), {
+export default withLayout(withAuth(observer(CalendarPage), { required: true, passthrough: true }), {
   title: 'Calendiary',
   disableHeader: true,
   theme: 'dark',

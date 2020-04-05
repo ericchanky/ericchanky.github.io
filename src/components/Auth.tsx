@@ -5,6 +5,7 @@ import qs from 'qs'
 import React from 'react'
 
 import { storeContext } from '../store'
+import Config from '../store/config'
 
 interface Props {
   required?: boolean
@@ -49,14 +50,60 @@ const useStyles = makeStyles((theme) => ({
     letterSpacing: theme.spacing(3),
     textIndent: theme.spacing(3),
   },
+  codePadContainer: {
+    width: 350,
+  },
 }))
 
 // Password length
 const PasswordLength = 6
 
+interface CodePadProps {
+  theme: Config['theme']
+  password: string
+  setPassword(pw: string): void
+}
+
+export const CodePad = ({ password, setPassword, theme }: CodePadProps) => {
+  const { button, label, item, input, codePadContainer } = useStyles({ t: theme })
+
+  return (
+    <Box className={codePadContainer}>
+      <InputBase
+        readOnly
+        classes={{ input }}
+        value={password.replace(/./g, '*')}
+      />
+      <Grid container spacing={2}>
+        {'123456789*0<'.split('').map((t) => {
+          return (
+            <Grid item key={t} xs={4} className={item}>
+              <IconButton
+                className={button}
+                classes={{ label }}
+                color="inherit"
+                onClick={() => {
+                  if (t === '<') {
+                    setPassword(password.slice(0, -1))
+                    return
+                  }
+                  setPassword(`${password}${t}`)
+                }}
+                disabled={password.length >= PasswordLength}
+              >
+                {t}
+              </IconButton>
+            </Grid>
+          )
+        })}
+      </Grid>
+    </Box>
+  )
+}
+
 export const withAuth = (Component: (props: AuthProps) => JSX.Element, { required = false, passthrough = false }: Props) => observer(() => {
   const { config, image } = React.useContext(storeContext)
-  const { container, verticle, button, label, item, input } = useStyles({ t: config.theme })
+  const { container, verticle } = useStyles({ t: config.theme })
 
   const [password, setPassword] = React.useState(config.password)
 
@@ -95,34 +142,11 @@ export const withAuth = (Component: (props: AuthProps) => JSX.Element, { require
     return (
       <Box className={container}>
         <Box className={verticle}>
-          <InputBase
-            readOnly
-            classes={{ input }}
-            value={password.replace(/./g, '*')}
+          <CodePad
+            theme={config.theme}
+            password={password}
+            setPassword={setPassword}
           />
-          <Grid container spacing={2}>
-            {'123456789*0<'.split('').map((t) => {
-              return (
-                <Grid item key={t} xs={4} className={item}>
-                  <IconButton
-                    className={button}
-                    classes={{ label }}
-                    color="inherit"
-                    onClick={() => {
-                      if (t === '<') {
-                        setPassword(password.slice(0, -1))
-                        return
-                      }
-                      setPassword(`${password}${t}`)
-                    }}
-                    disabled={password.length >= PasswordLength}
-                  >
-                    {t}
-                  </IconButton>
-                </Grid>
-              )
-            })}
-          </Grid>
         </Box>
       </Box>
     )
