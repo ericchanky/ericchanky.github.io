@@ -1,3 +1,4 @@
+import { Typography } from '@material-ui/core'
 import React from 'react'
 import { EventProps } from 'react-big-calendar'
 import ReactMarkdown from 'react-markdown'
@@ -8,8 +9,9 @@ interface Props {
 
 const PostEvent = ({ event }: Props) => {
   return (
-    // <Typography component="pre" variant="body2" style={{ whiteSpace: 'pre-line' }}>{event.title}</Typography>
-    <ReactMarkdown source={event.title} />
+    <Typography component="div" variant="body1">
+      <ReactMarkdown source={event.title} />
+    </Typography>
   )
 }
 
