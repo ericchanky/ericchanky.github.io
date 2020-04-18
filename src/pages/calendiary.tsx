@@ -1,6 +1,7 @@
 import 'react-big-calendar/lib/css/react-big-calendar.css'
 
-import { Box, fade, makeStyles, Theme, useMediaQuery, useTheme } from '@material-ui/core'
+import { Box, fade, makeStyles, useMediaQuery, useTheme } from '@material-ui/core'
+import { deepOrange } from '@material-ui/core/colors'
 import { endOfDay, endOfMonth, format, formatISO, getDay, parseISO, startOfDay, startOfMonth, startOfWeek } from 'date-fns'
 import enUS from 'date-fns/locale/en-US'
 import { observer } from 'mobx-react'
@@ -10,6 +11,7 @@ import { Calendar, CalendarProps, dateFnsLocalizer } from 'react-big-calendar'
 
 import { AuthProps, withAuth } from '../components/Auth'
 import EditPost from '../components/Calendiary/EditPost'
+import PostDateHeader from '../components/Calendiary/PostDateHeader'
 import PostEvent from '../components/Calendiary/PostEvent'
 import PostToolbar from '../components/Calendiary/PostToolbar'
 import Image from '../components/Image'
@@ -30,11 +32,14 @@ const localizer = dateFnsLocalizer({
   locales,
 })
 
-const useStyles = makeStyles((theme: Theme) => {
+const useStyles = makeStyles(() => {
   return {
     '@global': {
       'body': {
         overflow: 'hidden',
+      },
+      '.rbc-header span': {
+        letterSpacing: '2.5px',
       },
       '.rbc-row-content': {
         maxHeight: '100%',
@@ -44,9 +49,6 @@ const useStyles = makeStyles((theme: Theme) => {
       },
       '.rbc-row-segment': {
         overflow: 'auto',
-      },
-      '.rbc-current': {
-        color: theme.palette.primary.main,
       },
       '.rbc-event-content': {
         whiteSpace: 'pre-line!important',
@@ -58,11 +60,11 @@ const useStyles = makeStyles((theme: Theme) => {
           margin: 0,
         },
       },
-      '.rbc-off-range-bg': {
-        background: `${fade('#111', 0.8)}!important`,
+      '.rbc-day-bg.rbc-off-range-bg': {
+        background: 'transparent',
       },
-      '.rbc-today': {
-        background: `${fade('#eaf6ff', 0.6)}!important`,
+      '.rbc-day-bg.rbc-today': {
+        background: 'transparent',
       },
       '.rbc-event': {
         border: 'none!important',
@@ -73,9 +75,23 @@ const useStyles = makeStyles((theme: Theme) => {
       '.rbc-event-label': {
         display: 'none!important',
       },
-      // '.rbc-header, .rbc-month-view, .rbc-day-bg, .rbc-month-row': {
-      //   borderColor: '#000!important',
-      // },
+      '.rbc-row-content .rbc-row:first-child': {
+        position: 'absolute',
+        zIndex: -1,
+      },
+      '.rbc-row-content .rbc-row': {
+        width: '100%',
+        height: '100%',
+      },
+      '.rbc-date-cell': {
+        color: fade('#fff', 0.1),
+        '&.rbc-off-range': {
+          color: fade('#fff', 0.05),
+        },
+        '&.rbc-current': {
+          color: fade(deepOrange.A400, 0.5),
+        },
+      },
     },
   }
 })
@@ -139,6 +155,7 @@ const CalendarPage = ({ password: passcode }: Props) => {
         localizer={localizer}
         events={events}
         view={view}
+        onView={setView}
         date={createDialog.date}
         onNavigate={(newDate) => {
           setCreateDialog({ open: createDialog.open, date: newDate })
@@ -153,14 +170,18 @@ const CalendarPage = ({ password: passcode }: Props) => {
         components={{
           event: PostEvent,
           toolbar: PostToolbar,
+          month: {
+            // @ts-ignore
+            dateHeader: PostDateHeader,
+          },
         }}
-        eventPropGetter={(event) => {
+        eventPropGetter={(event: typeof events[0]) => {
           return {
             style: {
               outline: 'none',
               backgroundColor: 'transparent',
-              // @ts-ignore
-              color: event.color || 'black',
+              color: event.color || 'white',
+              WebkitTextStroke: '1px rgba(255, 255, 255, 0.2)',
             },
           }
         }}

@@ -1,5 +1,5 @@
 import Axios from 'axios'
-import { addHours, isBefore } from 'date-fns'
+import { addHours, formatISO, isBefore, parseISO } from 'date-fns'
 import { shuffle } from 'lodash'
 import { action, computed, observable, reaction, when } from 'mobx'
 import { date, ignore } from 'mobx-sync'
@@ -31,7 +31,7 @@ class Image extends BaseStore {
   @ignore @observable public list = observable.array<ImageItem>([])
   @ignore @observable private albumId = ''
   @date @observable public wallpaperTimestamp = new Date
-  private auth = { token: '', expiry: new Date }
+  private auth = { token: '', expiry: formatISO(new Date) }
   private password = ''
   private preload = 0
   private subfix: 'w2048' | 'dv' = 'w2048'
@@ -54,7 +54,7 @@ class Image extends BaseStore {
     }, { delay: 100 })
 
     when(
-      () => isBefore(this.auth.expiry, this.now),
+      () => isBefore(parseISO(this.auth.expiry), this.now),
       () => {
         if (this.albumId === albumList['GYM']) {
           this.init({ title: 'GYM', preload: this.preload })
@@ -146,7 +146,7 @@ class Image extends BaseStore {
         'x-dzway-pwd': password,
       },
     })
-    this.auth = { token: `${res.data.token_type} ${res.data.access_token}`, expiry: addHours(new Date, 1) }
+    this.auth = { token: `${res.data.token_type} ${res.data.access_token}`, expiry: formatISO(addHours(new Date, 1)) }
   }
 
   private async fetch(albumId: string, nextPageToken: string | null) {
@@ -158,7 +158,7 @@ class Image extends BaseStore {
     if (nextPageToken === '') { return }
     if (!albumId) { return }
 
-    if (isBefore(this.auth.expiry, new Date) || this.auth.token === '') {
+    if (isBefore(parseISO(this.auth.expiry), new Date) || this.auth.token === '') {
       await this.fetchAuth()
     }
 

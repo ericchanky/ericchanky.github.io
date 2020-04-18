@@ -3,7 +3,10 @@ import 'react-infinite-calendar/styles.css'
 import { ButtonBase, ButtonGroup, Dialog, DialogContent, Grid, IconButton, Toolbar, Typography, useMediaQuery, useTheme } from '@material-ui/core'
 import KeyboardArrowLeftIcon from '@material-ui/icons/KeyboardArrowLeft'
 import KeyboardArrowRightIcon from '@material-ui/icons/KeyboardArrowRight'
+import VisibilityIcon from '@material-ui/icons/Visibility'
+import VisibilityOffIcon from '@material-ui/icons/VisibilityOff'
 import WallpaperIcon from '@material-ui/icons/Wallpaper'
+import { observer } from 'mobx-react'
 import React from 'react'
 import { ToolbarProps } from 'react-big-calendar'
 import InfiniteCalendar from 'react-infinite-calendar'
@@ -71,7 +74,18 @@ const PostToolbar = ({ label, date, onNavigate }: ToolbarProps) => {
         <GridDivider />
         <IconButton
           color="inherit"
-          onClick={() => setOpenCodePad(true)}
+          onClick={() => calendiary.set({ visibility: !calendiary.visibility })}
+        >
+          {calendiary.visibility ? <VisibilityOffIcon /> : <VisibilityIcon />}
+        </IconButton>
+        <IconButton
+          color="inherit"
+          onClick={() => {
+            if (calendiary.wallpaperCode) {
+              return calendiary.set({ wallpaperCode: '' })
+            }
+            return setOpenCodePad(true)
+          }}
         >
           <WallpaperIcon />
         </IconButton>
@@ -109,4 +123,4 @@ const PostToolbar = ({ label, date, onNavigate }: ToolbarProps) => {
   )
 }
 
-export default PostToolbar
+export default observer(PostToolbar)

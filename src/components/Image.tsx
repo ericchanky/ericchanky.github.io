@@ -68,7 +68,7 @@ const useStyles = makeStyles((theme) => ({
       position: 'absolute',
       width: '100%',
       height: '100%',
-      backgroundColor: fade('#000', 0.91),
+      backgroundColor: fade('#000', 0.88),
     } : undefined,
   }),
   background: ({ offset }: StyleProps) => ({
