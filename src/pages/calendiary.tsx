@@ -1,6 +1,6 @@
 import 'react-big-calendar/lib/css/react-big-calendar.css'
 
-import { Box, fade, makeStyles, useMediaQuery, useTheme } from '@material-ui/core'
+import { Box, fade, makeStyles, Theme, useMediaQuery, useTheme } from '@material-ui/core'
 import { deepOrange } from '@material-ui/core/colors'
 import { endOfDay, endOfMonth, format, formatISO, getDay, parseISO, startOfDay, startOfMonth, startOfWeek } from 'date-fns'
 import enUS from 'date-fns/locale/en-US'
@@ -32,7 +32,7 @@ const localizer = dateFnsLocalizer({
   locales,
 })
 
-const useStyles = makeStyles(() => {
+const useStyles = makeStyles((theme: Theme) => {
   return {
     '@global': {
       'body': {
@@ -44,11 +44,12 @@ const useStyles = makeStyles(() => {
       '.rbc-row-content': {
         maxHeight: '100%',
       },
-      '.rbc-row': {
-        maxHeight: 'calc(100% - 20px)',
-      },
       '.rbc-row-segment': {
         overflow: 'auto',
+
+        '& .rbc-event': {
+          padding: theme.spacing(0.5, 1),
+        },
       },
       '.rbc-event-content': {
         whiteSpace: 'pre-line!important',
@@ -65,9 +66,6 @@ const useStyles = makeStyles(() => {
       },
       '.rbc-day-bg.rbc-today': {
         background: 'transparent',
-      },
-      '.rbc-event': {
-        border: 'none!important',
       },
       '.rbc-time-slot, .rbc-timeslot-group': {
         borderColor: 'transparent!important',
