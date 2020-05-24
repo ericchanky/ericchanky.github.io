@@ -107,7 +107,7 @@ const CalendarPage = ({ password: passcode }: Props) => {
 
   const fetch = React.useCallback(async () => {
     const res = await getPosts(passcode, startOfMonth(createDialog.date), endOfMonth(createDialog.date))
-    setPosts(res.data.data)
+    setPosts(res.data.calendiaries)
   }, [createDialog.date, passcode])
 
   React.useEffect(() => {
