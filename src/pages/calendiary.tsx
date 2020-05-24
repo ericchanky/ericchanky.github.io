@@ -2,7 +2,7 @@ import 'react-big-calendar/lib/css/react-big-calendar.css'
 
 import { Box, fade, makeStyles, Theme, useMediaQuery, useTheme } from '@material-ui/core'
 import { deepOrange } from '@material-ui/core/colors'
-import { endOfDay, endOfMonth, format, formatISO, getDay, parseISO, startOfDay, startOfMonth, startOfWeek } from 'date-fns'
+import { endOfDay, endOfMonth, endOfWeek,format, formatISO, getDay, parse,parseISO, startOfDay, startOfMonth, startOfWeek } from 'date-fns'
 import enUS from 'date-fns/locale/en-US'
 import { observer } from 'mobx-react'
 import qs from 'qs'
@@ -106,7 +106,7 @@ const CalendarPage = ({ password: passcode }: Props) => {
   const [posts, setPosts] = React.useState<CalendiaryPost[]>([])
 
   const fetch = React.useCallback(async () => {
-    const res = await getPosts(passcode, startOfMonth(createDialog.date), endOfMonth(createDialog.date))
+    const res = await getPosts(passcode, startOfWeek(startOfMonth(createDialog.date)), endOfWeek(endOfMonth(createDialog.date)))
     setPosts(res.data.calendiaries)
   }, [createDialog.date, passcode])
 
