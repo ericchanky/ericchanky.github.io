@@ -6,22 +6,22 @@ export interface CalendiaryPost {
   passcode: string
   text: string
   date: string
-  createdAt: string
-  updatedAt: string
+  created_at: string
+  updated_at: string
   active: boolean
   color: string
 }
 
 const api = axios.create({
-  baseURL: 'https://dzway.herokuapp.com/',
+  baseURL: 'https://tools-server.herokuapp.com/',
   timeout: 30000,
   paramsSerializer: qs.stringify,
 })
 
-const query = (path: string, data: object) => {
-  return `/proxy?src=${encodeURIComponent(`https://us-central1-calendiary-7192f.cloudfunctions.net${path}?data=${btoa(JSON.stringify(data))}`)}`
-}
+// const query = (path: string, data: object) => {
+//   return `/proxy?src=${encodeURIComponent(`https://us-central1-calendiary-7192f.cloudfunctions.net${path}?data=${btoa(JSON.stringify(data))}`)}`
+// }
 
-export const createPost = (data: CalendiaryPost) => api.get(query('/create', data))
-export const getPost = (id: CalendiaryPost['id']) => api.get(query('/get', { id }))
-export const getAllPost = (passcode: string, start: Date, end: Date) => api.get(query('/getAll', { passcode, start, end }))
+export const createPost = (body: Omit<CalendiaryPost, 'id'>) => api.post('/calendiaries', body)
+export const updatePost = ({ id, ...body }: CalendiaryPost) => api.put(`/calendiaries/${id}`, body)
+export const getPosts = (passcode: string, start: Date, end: Date) => api.get(`/calendiaries/${passcode}`, { params: { start, end } })

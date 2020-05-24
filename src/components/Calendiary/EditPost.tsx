@@ -4,9 +4,8 @@ import cx from 'classnames'
 import { format, formatISO } from 'date-fns'
 import { ContentState, Editor, EditorState, getDefaultKeyBinding, Modifier, SelectionState } from 'draft-js'
 import React from 'react'
-import uuid from 'uuid/v4'
 
-import { CalendiaryPost, createPost } from '../../utils/calendiary'
+import { CalendiaryPost, createPost, updatePost } from '../../utils/calendiary'
 import { colorPool, take } from '../../utils/rand'
 import GridDivider from '../GridDivider'
 
@@ -297,16 +296,28 @@ const EditPost = ({ dialogProps, post, fetch, onClose }: Props) => {
           onClick={async () => {
             setLoading(true)
             try {
-              await createPost({
-                id: post.id || uuid(),
-                passcode: post.passcode || '',
-                text: editorState.getCurrentContent().getPlainText(),
-                date: formatISO(date),
-                createdAt: post.createdAt || formatISO(new Date()),
-                updatedAt: post.updatedAt || formatISO(new Date()),
-                active: post.active || true,
-                color: color,
-              })
+              if (post.id) {
+                await updatePost({
+                  id: post.id,
+                  passcode: post.passcode || '',
+                  text: editorState.getCurrentContent().getPlainText(),
+                  date: formatISO(date),
+                  created_at: post.created_at || formatISO(new Date()),
+                  updated_at: post.updated_at || formatISO(new Date()),
+                  active: post.active || true,
+                  color: color,
+                })
+              } else {
+                await createPost({
+                  passcode: post.passcode || '',
+                  text: editorState.getCurrentContent().getPlainText(),
+                  date: formatISO(date),
+                  created_at: post.created_at || formatISO(new Date()),
+                  updated_at: post.updated_at || formatISO(new Date()),
+                  active: post.active || true,
+                  color: color,
+                })
+              }
             } catch (err) {
               console.log(err)
             }

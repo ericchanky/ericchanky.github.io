@@ -18,7 +18,7 @@ import Image from '../components/Image'
 import { withLayout } from '../components/Layout'
 import useDimension from '../components/useDimension'
 import { storeContext } from '../store'
-import { CalendiaryPost, getAllPost } from '../utils/calendiary'
+import { CalendiaryPost, getPosts } from '../utils/calendiary'
 
 const locales = {
   'en-US': enUS,
@@ -106,7 +106,7 @@ const CalendarPage = ({ password: passcode }: Props) => {
   const [posts, setPosts] = React.useState<CalendiaryPost[]>([])
 
   const fetch = React.useCallback(async () => {
-    const res = await getAllPost(passcode, startOfMonth(createDialog.date), endOfMonth(createDialog.date))
+    const res = await getPosts(passcode, startOfMonth(createDialog.date), endOfMonth(createDialog.date))
     setPosts(res.data.data)
   }, [createDialog.date, passcode])
 

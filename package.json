@@ -12,6 +12,8 @@
     "csvtojson": "^2.0.10",
     "date-fns": "^2.11.1",
     "draft-js": "^0.11.5",
+    "draft-js-export-markdown": "^1.4.0",
+    "draft-js-import-markdown": "^1.4.0",
     "gatsby": "^2.20.12",
     "gatsby-plugin-manifest": "^2.3.3",
     "gatsby-plugin-offline": "^3.1.2",
