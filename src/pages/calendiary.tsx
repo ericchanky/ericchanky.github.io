@@ -2,7 +2,7 @@ import 'react-big-calendar/lib/css/react-big-calendar.css'
 
 import { Box, fade, makeStyles, Theme, useMediaQuery, useTheme } from '@material-ui/core'
 import { deepOrange } from '@material-ui/core/colors'
-import { endOfDay, endOfMonth, endOfWeek,format, formatISO, getDay, parse,parseISO, startOfDay, startOfMonth, startOfWeek } from 'date-fns'
+import { endOfDay, endOfMonth, endOfWeek, format, formatISO, getDay, parseISO, startOfDay, startOfMonth, startOfWeek } from 'date-fns'
 import enUS from 'date-fns/locale/en-US'
 import { observer } from 'mobx-react'
 import qs from 'qs'
@@ -11,6 +11,7 @@ import { Calendar, CalendarProps, dateFnsLocalizer } from 'react-big-calendar'
 
 import { AuthProps, withAuth } from '../components/Auth'
 import EditPost from '../components/Calendiary/EditPost'
+import PostAgendaEvent from '../components/Calendiary/PostAgendaEvent'
 import PostDateHeader from '../components/Calendiary/PostDateHeader'
 import PostEvent from '../components/Calendiary/PostEvent'
 import PostToolbar from '../components/Calendiary/PostToolbar'
@@ -117,7 +118,7 @@ const CalendarPage = ({ password: passcode }: Props) => {
   const theme = useTheme()
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'))
   React.useEffect(() => {
-    setView(isMobile ? 'day' : 'month')
+    setView(isMobile ? 'agenda' : 'month')
   }, [isMobile])
 
   const events = React.useMemo(() => {
@@ -144,7 +145,7 @@ const CalendarPage = ({ password: passcode }: Props) => {
   return (
     <Box>
       {calendiary.wallpaperCode && (
-        <Box style={{ position: 'fixed' }}>
+        <Box style={{ position: 'fixed', zIndex: -1 }}>
           <Image password={calendiary.wallpaperCode} raw wallpaper />
         </Box>
       )}
@@ -153,6 +154,10 @@ const CalendarPage = ({ password: passcode }: Props) => {
         localizer={localizer}
         events={events}
         view={view}
+        views={{
+          month: true,
+          agenda: PostAgendaEvent,
+        }}
         onView={setView}
         date={createDialog.date}
         onNavigate={(newDate) => {

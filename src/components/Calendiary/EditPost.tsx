@@ -1,13 +1,16 @@
 import { AppBar, Box, Button, Dialog, DialogActions, DialogContent, DialogProps, fade, IconButton, makeStyles, Theme, Toolbar, Typography, useMediaQuery, useTheme } from '@material-ui/core'
+import CalendarTodayIcon from '@material-ui/icons/CalendarToday'
 import CloseIcon from '@material-ui/icons/Close'
 import cx from 'classnames'
 import { format, formatISO } from 'date-fns'
 import { ContentState, Editor, EditorState, getDefaultKeyBinding, Modifier, SelectionState } from 'draft-js'
 import React from 'react'
+import ReactInfiniteCalendar from 'react-infinite-calendar'
 
 import { CalendiaryPost, createPost, updatePost } from '../../utils/calendiary'
 import { colorPool, take } from '../../utils/rand'
 import GridDivider from '../GridDivider'
+import useDimension from '../useDimension'
 
 interface Props {
   dialogProps: DialogProps
@@ -65,14 +68,15 @@ const getLastOrderedList = (contentState: ContentState, key: string, preferedInd
 const EditPost = ({ dialogProps, post, fetch, onClose }: Props) => {
   const theme = useTheme()
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'))
+  const { width, height } = useDimension()
 
   const [color, setColor] = React.useState(post.color || take(colorPool))
   const [editorState, setEditorState] = React.useState(EditorState.moveFocusToEnd(EditorState.createWithContent(ContentState.createFromText(post.text || ''))))
   const [loading, setLoading] = React.useState(false)
+  const [open, setOpen] = React.useState(false)
+  const [date, setDate] = React.useState(new Date(post.date || new Date()))
 
   const { colorPicker, activeColorPicker } = useStyles()
-
-  const date = React.useMemo(() => post.date ? new Date(post.date) : new Date, [post.date])
 
   return (
     <Dialog
@@ -86,6 +90,12 @@ const EditPost = ({ dialogProps, post, fetch, onClose }: Props) => {
         <Toolbar>
           <Typography variant="h5">{format(date, 'do MMMM, yyyy')}</Typography>
           <GridDivider />
+          <IconButton
+            color="inherit"
+            onClick={() => setOpen(true)}
+          >
+            <CalendarTodayIcon />
+          </IconButton>
           <IconButton
             color="inherit"
             onClick={onClose}
@@ -331,6 +341,22 @@ const EditPost = ({ dialogProps, post, fetch, onClose }: Props) => {
           {post.id ? 'Update' : 'Save'}
         </Button>
       </DialogActions>
+      <Dialog
+        fullScreen={isMobile}
+        open={open}
+        onClose={() => setOpen(false)}
+      >
+        <ReactInfiniteCalendar
+          autoFocus
+          width={isMobile ? width : 400}
+          height={isMobile ? height : 600}
+          selected={date}
+          onSelect={(d: Date) => {
+            setDate(d)
+            setOpen(false)
+          }}
+        />
+      </Dialog>
     </Dialog>
   )
 }

@@ -1,6 +1,7 @@
 import 'react-infinite-calendar/styles.css'
 
 import { ButtonBase, ButtonGroup, Dialog, DialogContent, Grid, IconButton, Toolbar, Typography, useMediaQuery, useTheme } from '@material-ui/core'
+import CalendarTodayIcon from '@material-ui/icons/CalendarToday'
 import KeyboardArrowLeftIcon from '@material-ui/icons/KeyboardArrowLeft'
 import KeyboardArrowRightIcon from '@material-ui/icons/KeyboardArrowRight'
 import VisibilityIcon from '@material-ui/icons/Visibility'
@@ -16,7 +17,7 @@ import { CodePad } from '../Auth'
 import GridDivider from '../GridDivider'
 import useDimension from '../useDimension'
 
-const PostToolbar = ({ label, date, onNavigate }: ToolbarProps) => {
+const PostToolbar = ({ label, date, view, onNavigate }: ToolbarProps) => {
   const { calendiary } = React.useContext(storeContext)
   const [open, setOpen] = React.useState(false)
   const [openCodePad, setOpenCodePad] = React.useState(false)
@@ -64,14 +65,24 @@ const PostToolbar = ({ label, date, onNavigate }: ToolbarProps) => {
             </IconButton>
           </ButtonGroup>
         </Grid>
-        <Grid item>
-          <ButtonBase
+        {view !== 'agenda' && (
+          <Grid item>
+            <ButtonBase
+              onClick={() => setOpen(true)}
+            >
+              <Typography color="secondary" variant="h5">{label}</Typography>
+            </ButtonBase>
+          </Grid>
+        )}
+        <GridDivider />
+        {view === 'agenda' && (
+          <IconButton
+            color="inherit"
             onClick={() => setOpen(true)}
           >
-            <Typography color="secondary" variant="h5">{label}</Typography>
-          </ButtonBase>
-        </Grid>
-        <GridDivider />
+            <CalendarTodayIcon />
+          </IconButton>
+        )}
         <IconButton
           color="inherit"
           onClick={() => calendiary.set({ visibility: !calendiary.visibility })}
