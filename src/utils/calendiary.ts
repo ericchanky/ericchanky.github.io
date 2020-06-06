@@ -13,7 +13,7 @@ export interface CalendiaryPost {
 }
 
 const api = axios.create({
-  baseURL: 'https://tools-server.herokuapp.com/',
+  baseURL: 'https://dzway.herokuapp.com/',
   timeout: 30000,
   paramsSerializer: qs.stringify,
 })
@@ -24,4 +24,4 @@ const api = axios.create({
 
 export const createPost = (body: Omit<CalendiaryPost, 'id'>) => api.post('/calendiaries', body)
 export const updatePost = ({ id, ...body }: CalendiaryPost) => api.put(`/calendiaries/${id}`, body)
-export const getPosts = (passcode: string, start: Date, end: Date) => api.get(`/calendiaries/${passcode}`, { params: { start, end } })
+export const getPosts = (passcode: string, start: Date, end: Date) => api.get('/calendiaries', { params: { start, end, passcode } })
