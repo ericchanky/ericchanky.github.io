@@ -87,7 +87,7 @@ const useStyles = makeStyles((theme: Theme) => {
         '&.rbc-off-range': {
           color: fade('#fff', 0.05),
         },
-        '&.rbc-current': {
+        '&.rbc-now': {
           color: fade(deepOrange.A400, 0.5),
         },
       },
@@ -102,14 +102,14 @@ const CalendarPage = ({ password: passcode }: Props) => {
   const { calendiary } = React.useContext(storeContext)
   const { height } = useDimension()
   const [view, setView] = React.useState<CalendarProps['view']>('month')
-  const [createDialog, setCreateDialog] = React.useState({ open: false, date: new Date() })
+  const [navigatedDate, setNavigatedDate] = React.useState(new Date())
   const [editDialog, setEditDialog] = React.useState<{ open: boolean, post?: Partial<CalendiaryPost> }>({ open: false })
   const [posts, setPosts] = React.useState<CalendiaryPost[]>([])
 
   const fetch = React.useCallback(async () => {
-    const res = await getPosts(passcode, startOfWeek(startOfMonth(createDialog.date)).getTime(), endOfWeek(endOfMonth(createDialog.date)).getTime())
+    const res = await getPosts(passcode, startOfWeek(startOfMonth(navigatedDate)).getTime(), endOfWeek(endOfMonth(navigatedDate)).getTime())
     setPosts(res.data.calendiaries)
-  }, [createDialog.date, passcode])
+  }, [navigatedDate, passcode])
 
   React.useEffect(() => {
     fetch()
@@ -159,9 +159,9 @@ const CalendarPage = ({ password: passcode }: Props) => {
           agenda: PostAgendaEvent,
         }}
         onView={setView}
-        date={createDialog.date}
+        date={navigatedDate}
         onNavigate={(newDate) => {
-          setCreateDialog({ open: createDialog.open, date: newDate })
+          setNavigatedDate(newDate)
         }}
         // @ts-ignore
         style={{ height }}
