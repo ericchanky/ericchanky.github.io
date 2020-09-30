@@ -2,12 +2,13 @@ import { AppBar, Box, Button, Dialog, DialogActions, DialogContent, DialogProps,
 import CalendarTodayIcon from '@material-ui/icons/CalendarToday'
 import CloseIcon from '@material-ui/icons/Close'
 import cx from 'classnames'
-import { format, formatISO } from 'date-fns'
+import { format } from 'date-fns'
 import { ContentState, Editor, EditorState, getDefaultKeyBinding, Modifier, SelectionState } from 'draft-js'
 import React from 'react'
 import ReactInfiniteCalendar from 'react-infinite-calendar'
+import { v4 as uuidv4 } from 'uuid'
 
-import { CalendiaryPost, createPost, updatePost } from '../../utils/calendiary'
+import { CalendiaryPost, createPost } from '../../utils/calendiary'
 import { colorPool, take } from '../../utils/rand'
 import GridDivider from '../GridDivider'
 import useDimension from '../useDimension'
@@ -306,28 +307,16 @@ const EditPost = ({ dialogProps, post, fetch, onClose }: Props) => {
           onClick={async () => {
             setLoading(true)
             try {
-              if (post.id) {
-                await updatePost({
-                  id: post.id,
-                  passcode: post.passcode || '',
-                  text: editorState.getCurrentContent().getPlainText(),
-                  date: formatISO(date),
-                  created_at: post.created_at || formatISO(new Date()),
-                  updated_at: post.updated_at || formatISO(new Date()),
-                  active: post.active || true,
-                  color: color,
-                })
-              } else {
-                await createPost({
-                  passcode: post.passcode || '',
-                  text: editorState.getCurrentContent().getPlainText(),
-                  date: formatISO(date),
-                  created_at: post.created_at || formatISO(new Date()),
-                  updated_at: post.updated_at || formatISO(new Date()),
-                  active: post.active || true,
-                  color: color,
-                })
-              }
+              await createPost({
+                id: post.id || uuidv4(),
+                passcode: post.passcode || '',
+                text: editorState.getCurrentContent().getPlainText(),
+                date: date.getTime(),
+                created_at: post.created_at || new Date().getTime(),
+                updated_at: post.updated_at || new Date().getTime(),
+                active: post.active || true,
+                color: color,
+              })
             } catch (err) {
               console.log(err)
             }

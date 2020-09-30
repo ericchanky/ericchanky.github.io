@@ -2,7 +2,7 @@ import 'react-big-calendar/lib/css/react-big-calendar.css'
 
 import { Box, fade, makeStyles, Theme, useMediaQuery, useTheme } from '@material-ui/core'
 import { deepOrange } from '@material-ui/core/colors'
-import { endOfDay, endOfMonth, endOfWeek, format, formatISO, getDay, parseISO, startOfDay, startOfMonth, startOfWeek } from 'date-fns'
+import { endOfDay, endOfMonth, endOfWeek, format, getDay, parseISO, startOfDay, startOfMonth, startOfWeek } from 'date-fns'
 import enUS from 'date-fns/locale/en-US'
 import { observer } from 'mobx-react'
 import qs from 'qs'
@@ -107,7 +107,7 @@ const CalendarPage = ({ password: passcode }: Props) => {
   const [posts, setPosts] = React.useState<CalendiaryPost[]>([])
 
   const fetch = React.useCallback(async () => {
-    const res = await getPosts(passcode, startOfWeek(startOfMonth(createDialog.date)), endOfWeek(endOfMonth(createDialog.date)))
+    const res = await getPosts(passcode, startOfWeek(startOfMonth(createDialog.date)).getTime(), endOfWeek(endOfMonth(createDialog.date)).getTime())
     setPosts(res.data.calendiaries)
   }, [createDialog.date, passcode])
 
@@ -188,7 +188,7 @@ const CalendarPage = ({ password: passcode }: Props) => {
             },
           }
         }}
-        onSelectSlot={(slot) => setEditDialog({ open: true, post: { date: formatISO(new Date(slot.start)), passcode } })}
+        onSelectSlot={(slot) => setEditDialog({ open: true, post: { date: new Date(slot.start).getTime(), passcode } })}
         // @ts-ignore
         onSelectEvent={(event) => setEditDialog({ open: true, post: event.post })}
       />
