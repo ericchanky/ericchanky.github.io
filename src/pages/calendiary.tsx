@@ -146,7 +146,7 @@ const CalendarPage = ({ password: passcode }: Props) => {
     <Box>
       {calendiary.wallpaperCode && (
         <Box style={{ position: 'fixed', zIndex: -1 }}>
-          <Image password={calendiary.wallpaperCode} raw wallpaper />
+          <Image password={calendiary.wallpaperCode} raw wallpaper move />
         </Box>
       )}
       <Calendar

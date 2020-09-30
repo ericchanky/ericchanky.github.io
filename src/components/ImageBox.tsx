@@ -5,6 +5,7 @@ import React from 'react'
 interface Props {
   className: string
   src?: string | null
+  style?: React.CSSProperties
 }
 
 const useStyles = makeStyles({
@@ -16,11 +17,11 @@ const useStyles = makeStyles({
   },
 })
 
-const ImageBox = ({ className, src }: Props) => {
+const ImageBox = ({ className, src, ...props }: Props) => {
   const { background } = useStyles({ src })
 
   return (
-    <Box className={classNames(className, background)} />
+    <Box className={classNames(className, background)} {...props} />
   )
 }
 

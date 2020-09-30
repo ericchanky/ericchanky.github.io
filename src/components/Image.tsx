@@ -7,18 +7,24 @@ import { storeContext } from '../store'
 import { Actions, emitter } from '../utils/event'
 import { AuthProps } from './Auth'
 import ImageBox from './ImageBox'
+import useMouse from './useMouse'
+import useScreen from './useScreen'
 
 interface Props extends AuthProps {
   hideBackground?: boolean
   hideForeground?: boolean
   raw?: boolean
   wallpaper?: boolean
+  move?: boolean
 }
 
 interface StyleProps {
   offset: number
   transform: string
   wallpaper: boolean
+  move: boolean
+  moveX: number
+  moveY: number
   // foreground: string,
   // background: string,
 }
@@ -51,15 +57,14 @@ const useStyles = makeStyles((theme) => ({
   hidden: {
     display: 'none',
   },
-  foreground: ({ transform, wallpaper }: StyleProps) => ({
+  foreground: ({ transform, wallpaper, move, moveX, moveY }: StyleProps) => ({
     width: '100%',
     height: '100%',
-    backgroundSize: wallpaper ? 'cover' : 'contain',
+    backgroundSize: move ? '110%' : wallpaper ? 'cover' : 'contain',
     backgroundRepeat: 'no-repeat',
-    backgroundPosition: 'center',
-    // backgroundImage: `url(${foreground})`,
+    backgroundPosition: move ? `${moveX}% ${moveY}%` : 'center',
     transform,
-    transition: theme.transitions.create(['background'], {
+    transition: move ? undefined : theme.transitions.create(['background'], {
       duration: theme.transitions.duration.complex,
       easing: theme.transitions.easing.easeInOut,
     }),
@@ -68,7 +73,7 @@ const useStyles = makeStyles((theme) => ({
       position: 'absolute',
       width: '100%',
       height: '100%',
-      backgroundColor: fade('#000', 0.88),
+      backgroundColor: fade('#000', 0.8),
     } : undefined,
   }),
   background: ({ offset }: StyleProps) => ({
@@ -92,11 +97,19 @@ const useStyles = makeStyles((theme) => ({
 
 const PRELOAD = 5
 
-const Image = ({ password, hideBackground = false, hideForeground = false, raw = false, wallpaper = false }: Props) => {
+const Image = ({ password, hideBackground = false, hideForeground = false, raw = false, wallpaper = false, move = false }: Props) => {
   const theme = useTheme()
+  const mouse = useMouse()
+  const screen = useScreen()
   const isLargerThanMD = useMediaQuery(theme.breakpoints.up('md'))
   const { image } = React.useContext(storeContext)
   const { first, second } = image
+
+  const shift = React.useMemo(() => {
+    const x = mouse.x / screen.width * 100
+    const y = mouse.y / screen.height * 100
+    return { x, y }
+  }, [mouse.x, mouse.y, screen.height, screen.width])
 
   const [attr, setAttr] = React.useState({
     x: 0, y: 0, ox: 0, oy: 0,
@@ -203,6 +216,9 @@ const Image = ({ password, hideBackground = false, hideForeground = false, raw =
     offset,
     transform,
     wallpaper,
+    move,
+    moveX: shift.x,
+    moveY: shift.y,
   })
 
   React.useEffect(() => {
