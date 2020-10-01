@@ -3,7 +3,7 @@ import { addHours, formatISO, isBefore, parseISO } from 'date-fns'
 import { shuffle } from 'lodash'
 import { action, computed, observable, reaction, when } from 'mobx'
 import { date, ignore } from 'mobx-sync'
-import { v4 as uuidv4 } from 'uuid'
+import uuid from 'uuid/v4'
 
 import albumList from '../utils/list.json'
 import { take } from '../utils/rand'
@@ -178,7 +178,7 @@ class Image extends BaseStore {
         ...this.list.slice(0, this.preload),
         ... shuffle(this.list.slice(this.preload).concat((res.data.mediaItems as any[])
           .map((item) => ({
-            id: uuidv4(),
+            id: uuid(),
             url: `${item.baseUrl}=${this.subfix}`,
             width: Number(item.mediaMetadata.width),
             height: Number(item.mediaMetadata.height),
