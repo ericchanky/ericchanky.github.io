@@ -3,9 +3,10 @@ import React from 'react'
 
 interface Props extends IconButtonProps {
   fullWidth?: boolean
+  disableElevation?: boolean
 }
 
-const ToolbarIconButton = ({ fullWidth, ...props }: Props) => {
+const ToolbarIconButton = ({ fullWidth, disableElevation, ...props }: Props) => {
   return (
     <IconButton {...props} />
   )

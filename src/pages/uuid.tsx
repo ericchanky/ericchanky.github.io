@@ -2,7 +2,7 @@ import { Box, Grid, IconButton, InputAdornment, makeStyles, TextField } from '@m
 import ReplayIcon from '@material-ui/icons/Replay'
 import SaveIcon from '@material-ui/icons/Save'
 import React from 'react'
-import uuid from 'uuid/v4'
+import { v4 as uuidv4 } from 'uuid'
 
 import { withLayout } from '../components/withLayout'
 
@@ -14,7 +14,7 @@ const useStyles = makeStyles({
 
 const UUID = () => {
   const { input } = useStyles()
-  const [value, setValue] = React.useState(uuid())
+  const [value, setValue] = React.useState(uuidv4())
 
   const ref = React.createRef<HTMLInputElement>()
 
@@ -49,7 +49,7 @@ const UUID = () => {
                   </IconButton>
                   <IconButton
                     color="inherit"
-                    onClick={() => setValue(uuid())}
+                    onClick={() => setValue(uuidv4())}
                   >
                     <ReplayIcon />
                   </IconButton>
