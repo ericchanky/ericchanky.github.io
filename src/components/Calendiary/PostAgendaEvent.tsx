@@ -93,7 +93,7 @@ PostAgendaEvent.navigate = (date: Date, action: NavigateAction) => {
   case 'PREV':
     return addWeeks(date, -1)
   case 'NEXT':
-    return addWeeks(date, -1)
+    return addWeeks(date, 1)
   default:
     return date
   }

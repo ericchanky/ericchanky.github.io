@@ -19,7 +19,7 @@ import { CodePad } from '../withAuth'
 import ToolbarIconButton from './ToolbarIconButton'
 
 const PostToolbar = ({ label, date, view, onNavigate }: ToolbarProps) => {
-  const { calendiary } = React.useContext(storeContext)
+  const { calendiary, image } = React.useContext(storeContext)
   const [open, setOpen] = React.useState(false)
   const [openCodePad, setOpenCodePad] = React.useState(false)
   const [password, setPassword] = React.useState('')
@@ -45,6 +45,12 @@ const PostToolbar = ({ label, date, view, onNavigate }: ToolbarProps) => {
       setOpenCodePad(false)
     }
   }, [calendiary, password])
+
+  React.useEffect(() => {
+    if (calendiary.wallpaperCode === '') {
+      image.wallpaperList.replace([])
+    }
+  }, [calendiary.wallpaperCode, image])
 
   return (
     <Toolbar>

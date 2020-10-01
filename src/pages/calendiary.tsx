@@ -138,7 +138,7 @@ const CalendarPage = ({ password: passcode }: Props) => {
 
   React.useEffect(() => {
     const code = qs.parse(location.search.substring(1)).wallpaper
-    if (code) {
+    if (code && typeof code === 'string') {
       calendiary.set({ wallpaperCode: code })
     }
   }, [calendiary])

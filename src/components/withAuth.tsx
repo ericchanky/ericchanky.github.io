@@ -110,7 +110,7 @@ export const withAuth = (Component: (props: AuthProps) => JSX.Element, { require
   React.useEffect(() => {
     // init password by query params
     const query = qs.parse(location.search.substring(1))
-    if (query.password) {
+    if (query.password && typeof query.password === 'string') {
       setPassword(query.password)
     }
   }, [])
