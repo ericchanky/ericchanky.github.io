@@ -10,6 +10,7 @@ const routes = [
   { key: 'calendiary', name: 'Calendiary', url: '/calendiary' },
   { key: 'screensaver', name: 'Screen Saver', url: '/screensaver' },
   { key: 'wallpaper', name: 'Wallpaper', url: '/wallpaper' },
+  { key: 'secretpass', name: 'Secret Pass', url: '/secretpass' },
 ]
 
 interface Props {

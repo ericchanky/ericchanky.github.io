@@ -5,6 +5,8 @@ const useStyles = makeStyles({
   container: {
     maxWidth: 960,
     margin: 'auto',
+    width: '90%',
+    height: '100vh',
   },
 })
 

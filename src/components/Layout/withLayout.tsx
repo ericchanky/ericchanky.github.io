@@ -67,7 +67,7 @@ const darkTheme = (raw: boolean) => createMuiTheme({
     },
     background: {
       paper: '#444',
-      default: raw ? 'rgba(0,0,0,0)' : '#222',
+      default: raw ? 'rgba(0,0,0,0)' : '#111',
     },
   },
   overrides: {
