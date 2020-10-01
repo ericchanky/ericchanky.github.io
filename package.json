@@ -20,6 +20,7 @@
     "gatsby-plugin-react-helmet": "^3.2.1",
     "gatsby-plugin-sharp": "^2.5.3",
     "gatsby-source-filesystem": "^2.2.2",
+    "gatsby-theme-material-ui": "^1.0.13",
     "gatsby-transformer-sharp": "^2.4.3",
     "lodash": "^4.17.20",
     "mobx": "^5.15.4",

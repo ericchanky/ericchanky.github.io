@@ -7,7 +7,7 @@ import { storeContext } from '../store'
 import { Actions, emitter } from '../utils/event'
 import { useMouse, useScreen } from './hooks'
 import ImageBox from './ImageBox'
-import { AuthProps } from './withAuth'
+import { AuthProps } from './Layout/withAuth'
 
 interface Props extends AuthProps {
   hideBackground?: boolean

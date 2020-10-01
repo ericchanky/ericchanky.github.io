@@ -4,7 +4,7 @@ import SaveIcon from '@material-ui/icons/Save'
 import React from 'react'
 import { v4 as uuid } from 'uuid'
 
-import { withLayout } from '../components/withLayout'
+import { withLayout } from '../components/Layout/withLayout'
 
 const useStyles = makeStyles({
   input: {

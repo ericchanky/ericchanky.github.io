@@ -10,9 +10,9 @@ import React from 'react'
 
 import Awake from '../components/Awake'
 import Image from '../components/Image'
+import { AuthProps, withAuth } from '../components/Layout/withAuth'
+import { withLayout } from '../components/Layout/withLayout'
 import Video from '../components/Video'
-import { AuthProps, withAuth } from '../components/withAuth'
-import { withLayout } from '../components/withLayout'
 import { storeContext } from '../store'
 import { Actions, emitter } from '../utils/event'
 

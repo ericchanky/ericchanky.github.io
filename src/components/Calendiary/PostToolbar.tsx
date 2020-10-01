@@ -15,7 +15,7 @@ import InfiniteCalendar from 'react-infinite-calendar'
 import { storeContext } from '../../store'
 import GridDivider from '../GridDivider'
 import { useMobile, useScreen } from '../hooks'
-import { CodePad } from '../withAuth'
+import { CodePad } from '../Layout/withAuth'
 import ToolbarIconButton from './ToolbarIconButton'
 
 const PostToolbar = ({ label, date, view, onNavigate }: ToolbarProps) => {

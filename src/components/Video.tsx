@@ -3,7 +3,7 @@ import { observer } from 'mobx-react'
 import React from 'react'
 
 import { storeContext } from '../store'
-import { AuthProps } from './withAuth'
+import { AuthProps } from './Layout/withAuth'
 
 interface Props extends AuthProps {}
 

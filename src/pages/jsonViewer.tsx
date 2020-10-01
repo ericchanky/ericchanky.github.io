@@ -1,7 +1,7 @@
 import { CardContent, CircularProgress, TextField, Typography } from '@material-ui/core'
 import React from 'react'
 
-import { withLayout } from '../components/withLayout'
+import { withLayout } from '../components/Layout/withLayout'
 
 const ReactJson = React.lazy(() => import('react-json-view'))
 

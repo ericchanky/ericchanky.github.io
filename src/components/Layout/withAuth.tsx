@@ -4,8 +4,8 @@ import { observer } from 'mobx-react'
 import qs from 'qs'
 import React from 'react'
 
-import { storeContext } from '../store'
-import Config from '../store/config'
+import { storeContext } from '../../store'
+import Config from '../../store/config'
 
 interface Props {
   required?: boolean

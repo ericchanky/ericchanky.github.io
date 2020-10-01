@@ -7,7 +7,7 @@ import { observer } from 'mobx-react'
 import qs from 'qs'
 import React from 'react'
 
-import { withLayout } from '../components/withLayout'
+import { withLayout } from '../components/Layout/withLayout'
 import { storeContext } from '../store'
 
 const useStyles = makeStyles((theme) => ({

@@ -2,8 +2,8 @@ import { AppBar, Dialog, DialogContent, DialogProps, IconButton, Link, makeStyle
 import CloseIcon from '@material-ui/icons/Close'
 import React from 'react'
 
-import { version } from '../../package.json'
-import GridDivider from './GridDivider'
+import { version } from '../../../package.json'
+import GridDivider from '../GridDivider'
 import Menu from './Menu'
 
 interface Props {
@@ -55,7 +55,7 @@ const MenuDialog = ({ dialogProps, onClose }: Props) => {
             variant="caption"
             onClick={(evt: any) => {
               evt.preventDefault()
-              location.reload(true)
+              location.reload()
             }}
           >
             Version: {version}

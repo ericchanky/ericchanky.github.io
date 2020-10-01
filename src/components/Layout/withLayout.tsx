@@ -11,12 +11,12 @@ import React from 'react'
 import Hammer from 'react-hammerjs'
 import Helmet, { HelmetProps } from 'react-helmet'
 
-import store, { persist, storeContext } from '../store'
-import { Actions, emitter } from '../utils/event'
-import GridDivider from './GridDivider'
-import MenuDialog from './MenuDialog'
+import store, { persist, storeContext } from '../../store'
+import { Actions, emitter } from '../../utils/event'
+import GridDivider from '../GridDivider'
+import MenuDialog from '../Menu/MenuDialog'
 
-const titleTemplate = (t: string) => `${t} | Tools`
+const titleTemplate = (t: string) => `${t} | Shhh...`
 
 const lightTheme = (raw: boolean) => createMuiTheme({
   typography: {

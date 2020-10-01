@@ -1,7 +1,6 @@
 import { CardContent, Grid } from '@material-ui/core'
+import { Link } from 'gatsby-theme-material-ui'
 import React from 'react'
-
-import Link from './Link'
 
 const routes = [
   { key: 'home', name: 'Home', url: '/' },
@@ -9,6 +8,8 @@ const routes = [
   { key: 'json-viewer', name: 'JSON Viewer', url: '/jsonViewer' },
   { key: 'timer', name: 'Timer', url: '/timer' },
   { key: 'calendiary', name: 'Calendiary', url: '/calendiary' },
+  { key: 'screensaver', name: 'Screen Saver', url: '/screensaver' },
+  { key: 'wallpaper', name: 'Wallpaper', url: '/wallpaper' },
 ]
 
 interface Props {
@@ -40,9 +41,9 @@ const Menu = ({ disables = [], filter = '' }: Props) => {
         })
         .map((route) => {
           return (
-            <Grid key={route.key} item xs={12} sm={6} md={4} lg={2}>
+            <Grid key={route.key} item xs={12} sm={4} md={3}>
               <CardContent>
-                <Link underline="none" color={matched(route.url) ? 'secondary' : 'primary'} href={route.url}>{route.name}</Link>
+                <Link color={matched(route.url) ? 'secondary' : 'primary'} to={route.url}>{route.name}</Link>
               </CardContent>
             </Grid>
           )

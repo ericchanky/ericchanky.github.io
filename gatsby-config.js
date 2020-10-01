@@ -27,9 +27,9 @@ module.exports = {
     {
       resolve: 'gatsby-plugin-manifest',
       options: {
-        name: 'Tools',
-        short_name: 'Tools',
-        start_url: '/wallpaper',
+        name: 'Shhh...',
+        short_name: 'Shhh...',
+        start_url: '/',
         background_color: '#000',
         theme_color: '#000',
         display: 'standalone',

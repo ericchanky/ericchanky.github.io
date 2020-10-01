@@ -1,7 +1,7 @@
 import { Button, CardActions, TextField } from '@material-ui/core'
 import React from 'react'
 
-import { withLayout } from '../components/withLayout'
+import { withLayout } from '../components/Layout/withLayout'
 
 const EncodeURL = () => {
   const [url, setURL] = React.useState('')
