@@ -111,7 +111,7 @@ export const withAuth = (Component: (props: AuthProps) => JSX.Element, { require
     // init password by query params
     const query = qs.parse(location.search.substring(1))
     if (query.password) {
-      setPassword(query.password)
+      setPassword(query.password as string)
     }
   }, [])
 
