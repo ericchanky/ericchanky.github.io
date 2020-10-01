@@ -1,4 +1,4 @@
-import { AppBar, Box, Button, Dialog, DialogActions, DialogContent, DialogProps, fade, IconButton, makeStyles, Theme, Toolbar, Typography, useMediaQuery, useTheme } from '@material-ui/core'
+import { AppBar, Box, Button, Dialog, DialogActions, DialogContent, DialogProps, fade, IconButton, makeStyles, Theme, Toolbar, Typography } from '@material-ui/core'
 import CalendarTodayIcon from '@material-ui/icons/CalendarToday'
 import CloseIcon from '@material-ui/icons/Close'
 import cx from 'classnames'
@@ -11,7 +11,7 @@ import { v4 as uuidv4 } from 'uuid'
 import { CalendiaryPost, createPost } from '../../utils/calendiary'
 import { colorPool, take } from '../../utils/rand'
 import GridDivider from '../GridDivider'
-import useDimension from '../useDimension'
+import { useMobile, useScreen } from '../hooks'
 
 interface Props {
   dialogProps: DialogProps
@@ -67,9 +67,8 @@ const getLastOrderedList = (contentState: ContentState, key: string, preferedInd
 }
 
 const EditPost = ({ dialogProps, post, fetch, onClose }: Props) => {
-  const theme = useTheme()
-  const isMobile = useMediaQuery(theme.breakpoints.down('sm'))
-  const { width, height } = useDimension()
+  const isMobile = useMobile()
+  const { width, height } = useScreen()
 
   const [color, setColor] = React.useState(post.color || take(colorPool))
   const [editorState, setEditorState] = React.useState(EditorState.moveFocusToEnd(EditorState.createWithContent(ContentState.createFromText(post.text || ''))))

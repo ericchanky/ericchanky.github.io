@@ -5,10 +5,9 @@ import React from 'react'
 
 import { storeContext } from '../store'
 import { Actions, emitter } from '../utils/event'
-import { AuthProps } from './Auth'
+import { useMouse, useScreen } from './hooks'
 import ImageBox from './ImageBox'
-import useMouse from './useMouse'
-import useScreen from './useScreen'
+import { AuthProps } from './withAuth'
 
 interface Props extends AuthProps {
   hideBackground?: boolean
@@ -106,8 +105,8 @@ const Image = ({ password, hideBackground = false, hideForeground = false, raw =
   const { first, second } = image
 
   const shift = React.useMemo(() => {
-    const x = mouse.x / screen.width * 100
-    const y = mouse.y / screen.height * 100
+    const x = (mouse.x + screen.width / 2) / screen.width / 4 * 100
+    const y = (mouse.y + screen.height / 2) / screen.height / 4 * 100
     return { x, y }
   }, [mouse.x, mouse.y, screen.height, screen.width])
 
@@ -182,7 +181,7 @@ const Image = ({ password, hideBackground = false, hideForeground = false, raw =
   }, [])
 
   const onDoubleTap = React.useCallback(() => {
-    if (!first) { return }
+    if (!first || raw) { return }
 
     if (attr.scale > 1 || attr.oScale > 1 || attr.x !== 0 || attr.y !== 0 || attr.ox !== 0 || attr.oy !== 0) {
       resetAttr()
@@ -203,7 +202,7 @@ const Image = ({ password, hideBackground = false, hideForeground = false, raw =
       const scale = window.innerWidth / currentWidth
       setAttr((a) => ({ ...a, scale, oScale: scale }))
     }
-  }, [attr.oScale, attr.ox, attr.oy, attr.scale, attr.x, attr.y, first, resetAttr])
+  }, [attr.oScale, attr.ox, attr.oy, attr.scale, attr.x, attr.y, first, raw, resetAttr])
 
   React.useEffect(() => {
     emitter.on(Actions.DOUBLE_TAP, onDoubleTap)

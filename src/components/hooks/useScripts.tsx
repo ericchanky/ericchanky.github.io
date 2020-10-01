@@ -22,7 +22,7 @@ import { useEffect, useState } from 'react'
 
 // Hook
 let cachedScripts: string[] = []
-const useScript = (src: string) => {
+export const useScript = (src: string) => {
   // Keeping track of script loaded and error state
   const [state, setState] = useState({
     loaded: false,
@@ -84,5 +84,3 @@ const useScript = (src: string) => {
 
   return [state.loaded, state.error]
 }
-
-export default useScript

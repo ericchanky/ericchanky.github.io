@@ -24,4 +24,4 @@ const api = axios.create({
 
 export const createPost = (body: CalendiaryPost) => api.post('/calendiaries', body)
 // export const updatePost = ({ id, ...body }: CalendiaryPost) => api.put(`/calendiaries/${id}`, body)
-export const getPosts = (passcode: string, start: number, end: number) => api.get('/calendiaries', { params: { start, end, passcode } })
+export const getPosts = (passcode: string, start: number, end: number) => api.get<{ calendiaries: CalendiaryPost[] }>('/calendiaries', { params: { start, end, passcode } })

@@ -1,7 +1,7 @@
 import React from 'react'
 
-import { withLayout } from '../components/Layout'
 import Menu from '../components/Menu'
+import { withLayout } from '../components/withLayout'
 
 const Index = () => {
   return (

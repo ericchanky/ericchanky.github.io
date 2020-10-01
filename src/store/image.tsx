@@ -141,6 +141,7 @@ class Image extends BaseStore {
 
   @action.bound
   public async fetchAuth(password = this.password) {
+    if (!password) { return }
     const res = await api.post('/auth', null, {
       headers: {
         'x-dzway-pwd': password,

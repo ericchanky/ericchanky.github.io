@@ -138,6 +138,16 @@ export const withAuth = (Component: (props: AuthProps) => JSX.Element, { require
     validatePassword(password)
   }, [password, validatePassword])
 
+  React.useEffect(() => {
+    const keypress = (evt: KeyboardEvent) => {
+      if (config.password.length < PasswordLength) {
+        setPassword((pwd) => `${pwd}${evt.key}`)
+      }
+    }
+    window.addEventListener('keypress', keypress)
+    return () => window.removeEventListener('keypress', keypress)
+  }, [config.password.length])
+
   if (config.password.length < PasswordLength && required) {
     return (
       <Box className={container}>

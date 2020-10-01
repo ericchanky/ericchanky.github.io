@@ -1,8 +1,8 @@
 import { Box, Card, CardContent, CardHeader, Fab, fade, Grid, makeStyles, Theme } from '@material-ui/core'
 import AddIcon from '@material-ui/icons/Add'
-import { format } from 'date-fns'
+import { addWeeks, format } from 'date-fns'
 import React from 'react'
-import { CalendarProps, EventProps } from 'react-big-calendar'
+import { CalendarProps, EventProps, NavigateAction } from 'react-big-calendar'
 import ReactMarkdown from 'react-markdown'
 
 import { CalendiaryPost } from '../../utils/calendiary'
@@ -88,8 +88,15 @@ PostAgendaEvent.title = () => {
   return 'List'
 }
 
-PostAgendaEvent.navigate = (date: Date) => {
-  return date
+PostAgendaEvent.navigate = (date: Date, action: NavigateAction) => {
+  switch (action) {
+  case 'PREV':
+    return addWeeks(date, -1)
+  case 'NEXT':
+    return addWeeks(date, -1)
+  default:
+    return date
+  }
 }
 
 export default PostAgendaEvent

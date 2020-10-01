@@ -7,7 +7,7 @@ import GridDivider from './GridDivider'
 import Menu from './Menu'
 
 interface Props {
-  dialogProps: DialogProps
+  dialogProps: Omit<DialogProps, 'children'>
   onClose(): void
 }
 
@@ -21,7 +21,7 @@ const useStyles = makeStyles(() => ({
 const MenuDialog = ({ dialogProps, onClose }: Props) => {
   const { footer } = useStyles()
   const [filter, setFilter] = React.useState('')
-  
+
   return (
     <Dialog
       fullScreen

@@ -1,7 +1,7 @@
 import { Button, CardActions, TextField } from '@material-ui/core'
 import React from 'react'
 
-import { withLayout } from '../components/Layout'
+import { withLayout } from '../components/withLayout'
 
 const EncodeURL = () => {
   const [url, setURL] = React.useState('')
@@ -18,7 +18,7 @@ const EncodeURL = () => {
 
   const onDecode = React.useCallback(() => {
     if (typeof window === 'undefined') { return }
-    
+
     if (/^https?/.test(url)) {
       setURL(decodeURI(url))
     } else {

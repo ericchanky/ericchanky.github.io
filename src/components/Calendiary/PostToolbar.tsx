@@ -1,6 +1,6 @@
 import 'react-infinite-calendar/styles.css'
 
-import { ButtonBase, ButtonGroup, Dialog, DialogContent, Grid, IconButton, Toolbar, Typography, useMediaQuery, useTheme } from '@material-ui/core'
+import { ButtonBase, ButtonGroup, Dialog, DialogContent, Grid, IconButton, Toolbar, Typography } from '@material-ui/core'
 import CalendarTodayIcon from '@material-ui/icons/CalendarToday'
 import KeyboardArrowLeftIcon from '@material-ui/icons/KeyboardArrowLeft'
 import KeyboardArrowRightIcon from '@material-ui/icons/KeyboardArrowRight'
@@ -13,9 +13,10 @@ import { ToolbarProps } from 'react-big-calendar'
 import InfiniteCalendar from 'react-infinite-calendar'
 
 import { storeContext } from '../../store'
-import { CodePad } from '../Auth'
 import GridDivider from '../GridDivider'
-import useDimension from '../useDimension'
+import { useMobile, useScreen } from '../hooks'
+import { CodePad } from '../withAuth'
+import ToolbarIconButton from './ToolbarIconButton'
 
 const PostToolbar = ({ label, date, view, onNavigate }: ToolbarProps) => {
   const { calendiary } = React.useContext(storeContext)
@@ -23,9 +24,8 @@ const PostToolbar = ({ label, date, view, onNavigate }: ToolbarProps) => {
   const [openCodePad, setOpenCodePad] = React.useState(false)
   const [password, setPassword] = React.useState('')
 
-  const theme = useTheme()
-  const isMobile = useMediaQuery(theme.breakpoints.down('sm'))
-  const { width, height } = useDimension()
+  const isMobile = useMobile()
+  const { width, height } = useScreen()
 
   React.useEffect(() => {
     if (password === '*') {
@@ -51,18 +51,18 @@ const PostToolbar = ({ label, date, view, onNavigate }: ToolbarProps) => {
       <Grid container alignItems="center" spacing={1}>
         <Grid item>
           <ButtonGroup>
-            <IconButton
+            <ToolbarIconButton
               color="secondary"
-              onClick={() => onNavigate('PREV', date)}
+              onClick={() => onNavigate('PREV')}
             >
               <KeyboardArrowLeftIcon />
-            </IconButton>
-            <IconButton
+            </ToolbarIconButton>
+            <ToolbarIconButton
               color="secondary"
-              onClick={() => onNavigate('NEXT', date)}
+              onClick={() => onNavigate('NEXT')}
             >
               <KeyboardArrowRightIcon />
-            </IconButton>
+            </ToolbarIconButton>
           </ButtonGroup>
         </Grid>
         {view !== 'agenda' && (

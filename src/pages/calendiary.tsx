@@ -1,23 +1,23 @@
 import 'react-big-calendar/lib/css/react-big-calendar.css'
 
-import { Box, fade, makeStyles, Theme, useMediaQuery, useTheme } from '@material-ui/core'
+import { Box, fade, makeStyles, Theme } from '@material-ui/core'
 import { deepOrange } from '@material-ui/core/colors'
 import { endOfDay, endOfMonth, endOfWeek, format, getDay, parseISO, startOfDay, startOfMonth, startOfWeek } from 'date-fns'
 import enUS from 'date-fns/locale/en-US'
 import { observer } from 'mobx-react'
 import qs from 'qs'
 import React from 'react'
-import { Calendar, CalendarProps, dateFnsLocalizer } from 'react-big-calendar'
+import { Calendar, dateFnsLocalizer, View } from 'react-big-calendar'
 
-import { AuthProps, withAuth } from '../components/Auth'
 import EditPost from '../components/Calendiary/EditPost'
 import PostAgendaEvent from '../components/Calendiary/PostAgendaEvent'
 import PostDateHeader from '../components/Calendiary/PostDateHeader'
 import PostEvent from '../components/Calendiary/PostEvent'
 import PostToolbar from '../components/Calendiary/PostToolbar'
+import { useMobile, useScreen } from '../components/hooks'
 import Image from '../components/Image'
-import { withLayout } from '../components/Layout'
-import useDimension from '../components/useDimension'
+import { AuthProps, withAuth } from '../components/withAuth'
+import { withLayout } from '../components/withLayout'
 import { storeContext } from '../store'
 import { CalendiaryPost, getPosts } from '../utils/calendiary'
 
@@ -99,24 +99,25 @@ interface Props extends AuthProps {}
 
 const CalendarPage = ({ password: passcode }: Props) => {
   useStyles()
+  const isMobile = useMobile()
   const { calendiary } = React.useContext(storeContext)
-  const { height } = useDimension()
-  const [view, setView] = React.useState<CalendarProps['view']>('month')
+  const { height } = useScreen()
+  const [view, setView] = React.useState<View>('month')
   const [navigatedDate, setNavigatedDate] = React.useState(new Date())
   const [editDialog, setEditDialog] = React.useState<{ open: boolean, post?: Partial<CalendiaryPost> }>({ open: false })
   const [posts, setPosts] = React.useState<CalendiaryPost[]>([])
 
   const fetch = React.useCallback(async () => {
-    const res = await getPosts(passcode, startOfWeek(startOfMonth(navigatedDate)).getTime(), endOfWeek(endOfMonth(navigatedDate)).getTime())
-    setPosts(res.data.calendiaries)
-  }, [navigatedDate, passcode])
+    const start = isMobile ? startOfWeek(navigatedDate) : startOfWeek(startOfMonth(navigatedDate))
+    const end = isMobile ? endOfWeek(navigatedDate) : endOfWeek(endOfMonth(navigatedDate))
+    const res = await getPosts(passcode, start.getTime(), end.getTime())
+    setPosts(res.data.calendiaries.sort((a, b) => a.date - b.date))
+  }, [isMobile, navigatedDate, passcode])
 
   React.useEffect(() => {
     fetch()
   }, [fetch])
 
-  const theme = useTheme()
-  const isMobile = useMediaQuery(theme.breakpoints.down('sm'))
   React.useEffect(() => {
     setView(isMobile ? 'agenda' : 'month')
   }, [isMobile])
@@ -146,7 +147,7 @@ const CalendarPage = ({ password: passcode }: Props) => {
     <Box>
       {calendiary.wallpaperCode && (
         <Box style={{ position: 'fixed', zIndex: -1 }}>
-          <Image password={calendiary.wallpaperCode} raw wallpaper move />
+          <Image password={calendiary.wallpaperCode} raw wallpaper move={!isMobile} />
         </Box>
       )}
       <Calendar
@@ -163,7 +164,6 @@ const CalendarPage = ({ password: passcode }: Props) => {
         onNavigate={(newDate) => {
           setNavigatedDate(newDate)
         }}
-        // @ts-ignore
         style={{ height }}
         formats={{
           dateFormat: 'd',

@@ -24,7 +24,7 @@
     "lodash": "^4.17.15",
     "mobx": "^5.15.4",
     "mobx-react": "^6.1.8",
-    "mobx-sync": "^2.1.3",
+    "mobx-sync": "^3.0.0",
     "qs": "^6.9.3",
     "react": "^16.13.1",
     "react-big-calendar": "^0.24.1",

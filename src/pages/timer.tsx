@@ -8,7 +8,7 @@ import { addMinutes, addSeconds, differenceInHours, differenceInMinutes, differe
 import { addHours } from 'date-fns/esm'
 import React from 'react'
 
-import { withLayout } from '../components/Layout'
+import { withLayout } from '../components/withLayout'
 
 const useStyles = makeStyles((theme) => ({
   container: {

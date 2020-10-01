@@ -8,11 +8,11 @@ import { observer } from 'mobx-react'
 import qs from 'qs'
 import React from 'react'
 
-import { AuthProps, withAuth } from '../components/Auth'
 import Awake from '../components/Awake'
 import Image from '../components/Image'
-import { withLayout } from '../components/Layout'
 import Video from '../components/Video'
+import { AuthProps, withAuth } from '../components/withAuth'
+import { withLayout } from '../components/withLayout'
 import { storeContext } from '../store'
 import { Actions, emitter } from '../utils/event'
 
