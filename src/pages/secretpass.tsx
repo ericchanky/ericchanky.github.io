@@ -1,4 +1,6 @@
-import { Button, Grid, makeStyles, TextField, Typography } from '@material-ui/core'
+import { Button, Grid, IconButton, InputAdornment, makeStyles, TextField, Typography } from '@material-ui/core'
+import Visibility from '@material-ui/icons/Visibility'
+import VisibilityOff from '@material-ui/icons/VisibilityOff'
 import React, { useMemo, useRef, useState } from 'react'
 
 import Page from '../components/Layout/Page'
@@ -16,6 +18,7 @@ const useStyles = makeStyles({
 
 const SecretPass = () => {
   const classes = useStyles()
+  const [visible, setVisible] = useState(false)
   const [password, setPasssword] = useState('')
   const ref = useRef<HTMLInputElement>(null)
 
@@ -35,9 +38,21 @@ const SecretPass = () => {
             fullWidth
             variant="outlined"
             size="small"
-            type="password"
+            type={visible ? 'text' : 'password'}
             value={password}
             onChange={(evt) => setPasssword(evt.target.value)}
+            InputProps={{
+              endAdornment: (
+                <InputAdornment position="end">
+                  <IconButton
+                    color="secondary"
+                    onClick={() => setVisible((v) => !v)}
+                  >
+                    {visible ? <VisibilityOff /> : <Visibility />}
+                  </IconButton>
+                </InputAdornment>
+              ),
+            }}
           />
         </Grid>
         <Grid item xs={12}>
