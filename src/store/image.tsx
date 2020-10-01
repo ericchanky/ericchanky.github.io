@@ -3,7 +3,7 @@ import { addHours, formatISO, isBefore, parseISO } from 'date-fns'
 import { shuffle } from 'lodash'
 import { action, computed, observable, reaction, when } from 'mobx'
 import { date, ignore } from 'mobx-sync'
-import uuid from 'uuid/v4'
+import { v4 as uuid } from 'uuid'
 
 import albumList from '../utils/list.json'
 import { take } from '../utils/rand'
