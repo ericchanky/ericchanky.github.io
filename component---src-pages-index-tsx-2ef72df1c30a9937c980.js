@@ -1,2 +1,0 @@
-(window.webpackJsonp=window.webpackJsonp||[]).push([[13],{QeBL:function(e,t,n){"use strict";n.r(t);var o=n("q1tI"),a=n.n(o),i=n("JzcK"),c=n("370G");t.default=Object(c.a)((function(){return a.a.createElement(i.a,{disables:["home"]})}),{title:"Home Page",meta:[{name:"description",content:"Useful tools for development or daily life."}]})}}]);
-//# sourceMappingURL=component---src-pages-index-tsx-2ef72df1c30a9937c980.js.map
