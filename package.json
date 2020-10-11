@@ -2,7 +2,7 @@
   "name": "tools",
   "private": true,
   "description": "A simple starter to get up and developing quickly with Gatsby",
-  "version": "1.0.44",
+  "version": "1.0.45",
   "author": "Eric Chan KY <eric.cky715@gmail.com>",
   "dependencies": {
     "@material-ui/core": "^4.9.8",
