@@ -5,7 +5,7 @@ import React from 'react'
 import { CalendarProps, EventProps, NavigateAction } from 'react-big-calendar'
 import ReactMarkdown from 'react-markdown'
 
-import { CalendiaryPost } from '../../utils/calendiary'
+import { CalendiaryPost } from '../../api/calendiary'
 
 const useStyle = makeStyles((theme: Theme) => ({
   container: {

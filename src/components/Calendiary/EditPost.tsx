@@ -8,7 +8,7 @@ import React from 'react'
 import ReactInfiniteCalendar from 'react-infinite-calendar'
 import { v4 as uuidv4 } from 'uuid'
 
-import { CalendiaryPost, createPost } from '../../utils/calendiary'
+import { CalendiaryPost, createPost } from '../../api/calendiary'
 import { colorPool, take } from '../../utils/rand'
 import GridDivider from '../GridDivider'
 import { useMobile, useScreen } from '../hooks'

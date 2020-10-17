@@ -1,4 +1,10 @@
+import { shuffle } from 'lodash'
+
 const salt = 'ybfDNvPQJz5kTncAY2MWFs8ueiSw4BpLX6GqKx3h9trUZgVRdEC1am7H0'
+
+export const generateSalt = (s = salt) => {
+  return shuffle(s.split('')).join('')
+}
 
 const pick = (n: number, s = salt): string => {
   const r = Math.floor(n / s.length)
@@ -25,12 +31,12 @@ export const randomSalt = (ctx: string, s = salt) => {
   return newSalt
 }
 
-export const tokenize = (p: string, ctx = '') => {
+export const tokenize = (p: string, ctx = '', s = salt) => {
   const seq = p.split('').map((w) => {
     return w.charCodeAt(0)
   }).join('')
 
-  const f = pick(Number(seq), randomSalt(ctx))
+  const f = pick(Number(seq), randomSalt(ctx, s))
   const i = Math.floor(f.length * 0.618)
   return f.slice(0, i) + '.' + f.slice(i)
 }

@@ -9,6 +9,7 @@ import qs from 'qs'
 import React from 'react'
 import { Calendar, dateFnsLocalizer, View } from 'react-big-calendar'
 
+import { CalendiaryPost, getPosts } from '../api/calendiary'
 import EditPost from '../components/Calendiary/EditPost'
 import PostAgendaEvent from '../components/Calendiary/PostAgendaEvent'
 import PostDateHeader from '../components/Calendiary/PostDateHeader'
@@ -19,7 +20,6 @@ import Image from '../components/Image'
 import { AuthProps, withAuth } from '../components/Layout/withAuth'
 import { withLayout } from '../components/Layout/withLayout'
 import { storeContext } from '../store'
-import { CalendiaryPost, getPosts } from '../utils/calendiary'
 
 const locales = {
   'en-US': enUS,

@@ -7,12 +7,14 @@ import { calendiary } from './calendiary'
 import { config } from './config'
 import { image } from './image'
 import { phrase } from './phrase'
+import { secretpass } from './secretpass'
 
 class Store extends BaseStore {
   @observable public config = config
   @observable public phrase = phrase
   @observable public image = image
   @observable public calendiary = calendiary
+  @observable public secretpass = secretpass
 }
 
 const store = new Store

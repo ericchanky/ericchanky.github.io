@@ -1,19 +1,20 @@
-import { Button, Grid, IconButton, InputAdornment, makeStyles, TextField, Typography } from '@material-ui/core'
+import { Button, Chip, Dialog, DialogActions, DialogContent, DialogTitle, Grid, IconButton, InputAdornment, makeStyles, TextField, Typography } from '@material-ui/core'
 import Visibility from '@material-ui/icons/Visibility'
 import VisibilityOff from '@material-ui/icons/VisibilityOff'
-import React, { useMemo, useRef, useState } from 'react'
+import { useObserver } from 'mobx-react'
+import React, { useContext, useEffect, useMemo, useState } from 'react'
+import { v4 as uuid } from 'uuid'
 
 import { useCopy } from '../components/hooks/useCopy'
 import Page from '../components/Layout/Page'
+import { CodePad } from '../components/Layout/withAuth'
 import { withLayout } from '../components/Layout/withLayout'
-import { tokenize } from '../utils/tokenize'
+import { storeContext } from '../store'
+import { generateSalt, tokenize } from '../utils/tokenize'
 
 const useStyles = makeStyles({
   fullHeihgt: {
     height: '100%',
-  },
-  center: {
-    textAlign: 'center',
   },
 })
 
@@ -23,24 +24,55 @@ const SecretPass = () => {
   const [password, setPasssword] = useState('')
   const [context, setContext] = useState('')
   const [ref, copy] = useCopy()
+  const { secretpass } = useContext(storeContext)
+  const [open, setOpen] = useState(false)
+  const [name, setName] = useState('')
+  const [passcode, setPasscode] = useState('')
+
+  useEffect(() => {
+    if (passcode.length < 6) { return }
+    secretpass.getSecrets(passcode)
+  }, [passcode, secretpass])
 
   const token = useMemo(() => {
     if (!password) { return '' }
-    return tokenize(password, context)
-  }, [context, password])
+    const secret = secretpass.secret ? secretpass.secret.secret : undefined
+    return tokenize(password.padEnd(8, ' '), context, secret)
+  }, [context, password, secretpass.secret])
 
-  return (
+  return useObserver(() => (
     <Page>
       <Grid container spacing={2} alignContent="center" className={classes.fullHeihgt}>
-        <Grid item xs={12} className={classes.center}>
+        <Grid container item xs={12} justify="center">
           <Typography variant="h4">Secret Pass</Typography>
+        </Grid>
+        <Grid container item xs={12} spacing={1}>
+          {secretpass.secrets.map((secret) => {
+            const selected = secretpass.secret && secret.id === secretpass.secret.id
+            return (
+              <Grid key={secret.id} item>
+                <Chip
+                  clickable
+                  label={secret.name}
+                  variant={selected ? 'default' : 'outlined'}
+                  onClick={() => {
+                    if (selected) {
+                      secretpass.selected = ''
+                    } else {
+                      secretpass.selected = secret.id
+                    }
+                  }}
+                />
+              </Grid>
+            )
+          })}
         </Grid>
         <Grid item xs={12}>
           <TextField
             fullWidth
             variant="outlined"
             size='small'
-            placeholder="Context"
+            label="Context"
             value={context}
             onChange={(evt) => setContext(evt.target.value)}
           />
@@ -51,7 +83,7 @@ const SecretPass = () => {
             variant="outlined"
             size="small"
             type={visible ? 'text' : 'password'}
-            placeholder="Passcode"
+            label="Passcode"
             value={password}
             onChange={(evt) => setPasssword(evt.target.value)}
             InputProps={{
@@ -75,23 +107,82 @@ const SecretPass = () => {
             inputRef={ref}
             variant="outlined"
             size="small"
-            placeholder="Secret Code"
+            label="Secret Code"
             value={token}
           />
         </Grid>
-        <Grid item xs={12} className={classes.center}>
-          <Button
-            onClick={() => {
-              copy()
-              setPasssword('')
-            }}
-          >
-            Copy
-          </Button>
+        <Grid container item xs={12} justify="center" spacing={2}>
+          <Grid item>
+            <Button
+              variant="contained"
+              onClick={() => {
+                copy()
+                setPasssword('')
+              }}
+            >
+              Copy
+            </Button>
+          </Grid>
+          <Grid item>
+            <Button onClick={() => setOpen(true)}>
+              Add Secret
+            </Button>
+          </Grid>
         </Grid>
       </Grid>
+      <Dialog
+        open={open}
+        onClose={() => setOpen(false)}
+        maxWidth="sm"
+        fullWidth
+      >
+        <DialogTitle>Generate secret</DialogTitle>
+        <DialogContent>
+          <Grid container justify="center">
+            <Grid item xs={12}>
+              {passcode.length < 6 && (
+                <CodePad
+                  theme="dark"
+                  password={passcode}
+                  setPassword={setPasscode}
+                />
+              )}
+              {passcode.length >= 6 && (
+                <TextField
+                  fullWidth
+                  variant="outlined"
+                  label="name"
+                  value={name}
+                  onChange={(evt) => setName(evt.target.value)}
+                />
+              )}
+            </Grid>
+          </Grid>
+        </DialogContent>
+        <DialogActions>
+          <Button size="small" onClick={() => setOpen(false)}>
+            Close
+          </Button>
+          <Button
+            size="small"
+            variant="contained"
+            onClick={async () => {
+              await secretpass.createSecret({
+                id: uuid(),
+                secret: generateSalt(),
+                name,
+                passcode,
+              })
+              setName('')
+              setOpen(false)
+            }}
+          >
+            Submit
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Page>
-  )
+  ))
 }
 
 export default withLayout(SecretPass, {
