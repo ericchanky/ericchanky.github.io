@@ -7,7 +7,10 @@ const sort = <T>(arr: T[], cb: (a: T, b: T) => number) => {
   for (let i = 0; i < nArr.length; i++) {
     for (let j = i+1; j < nArr.length; j++) {
       if (cb(nArr[i], nArr[j]) > 0) {
-        [nArr[i], nArr[j]] = [nArr[j], nArr[i]]
+        const x = nArr[i]
+        const y = nArr[j]
+        nArr[i] = y
+        nArr[j] = x
       }
     }
   }
@@ -38,7 +41,7 @@ export const randomSalt = (ctx: string, s = salt) => {
 
   const newSalt = sort(s.split(''), (a, b) => {
     return ((a.charCodeAt(0) * b.charCodeAt(0)) % n) - a.charCodeAt(0)
-  }).join()
+  }).join('')
 
   return newSalt
 }
