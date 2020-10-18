@@ -46,7 +46,7 @@ const SecretPass = () => {
         <Grid container item xs={12} justify="center">
           <Typography variant="h4">Secret Pass</Typography>
         </Grid>
-        <Grid container item xs={12} spacing={1}>
+        <Grid container item xs={12} spacing={1} justify="center">
           {secretpass.secrets.map((secret) => {
             const selected = secretpass.secret && secret.id === secretpass.secret.id
             return (
@@ -70,6 +70,8 @@ const SecretPass = () => {
         <Grid item xs={12}>
           <TextField
             fullWidth
+            type="text"
+            autoCapitalize="none"
             variant="outlined"
             size='small'
             label="Context"
@@ -117,6 +119,7 @@ const SecretPass = () => {
               variant="contained"
               onClick={() => {
                 copy()
+                setContext('')
                 setPasssword('')
               }}
             >

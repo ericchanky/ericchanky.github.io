@@ -2,19 +2,16 @@ import { shuffle } from 'lodash'
 
 const salt = 'ybfDNvPQJz5kTncAY2MWFs8ueiSw4BpLX6GqKx3h9trUZgVRdEC1am7H0'
 
-const sort = <T>(arr: T[], cb: (a: T, b: T) => number) => {
-  const nArr = arr.slice()
-  for (let i = 0; i < nArr.length; i++) {
-    for (let j = i+1; j < nArr.length; j++) {
-      if (cb(nArr[i], nArr[j]) > 0) {
-        const x = nArr[i]
-        const y = nArr[j]
-        nArr[i] = y
-        nArr[j] = x
-      }
-    }
+const remove = (arr: string[], n: number) => {
+  return [...arr.slice(0, n), ...arr.slice(n+1)]
+}
+
+const sort = (arr: string[], n: number): string[] => {
+  if (arr.length === 0) {
+    return []
   }
-  return nArr
+  const r = n % arr.length
+  return [arr[r], ...sort(remove(arr, r), n)]
 }
 
 export const generateSalt = (s = salt) => {
@@ -39,9 +36,7 @@ export const randomSalt = (ctx: string, s = salt) => {
     return acc + cur.charCodeAt(0)
   }, 0)
 
-  const newSalt = sort(s.split(''), (a, b) => {
-    return ((a.charCodeAt(0) * b.charCodeAt(0)) % n) - a.charCodeAt(0)
-  }).join('')
+  const newSalt = sort(s.split(''), n).join('')
 
   return newSalt
 }
@@ -53,5 +48,10 @@ export const tokenize = (p: string, ctx = '', s = salt) => {
 
   const f = pick(Number(seq), randomSalt(ctx, s))
   const i = Math.floor(f.length * 0.618)
+
+  if (/^#/.test(ctx)) {
+    return f
+  }
+
   return f.slice(0, i) + '.' + f.slice(i)
 }
