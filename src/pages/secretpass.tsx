@@ -1,4 +1,5 @@
 import { Button, Chip, Dialog, DialogActions, DialogContent, DialogTitle, Grid, IconButton, InputAdornment, makeStyles, TextField, Typography } from '@material-ui/core'
+import Clear from '@material-ui/icons/Clear'
 import Visibility from '@material-ui/icons/Visibility'
 import VisibilityOff from '@material-ui/icons/VisibilityOff'
 import { useObserver } from 'mobx-react'
@@ -111,6 +112,21 @@ const SecretPass = () => {
             size="small"
             label="Secret Code"
             value={token}
+            InputProps={{
+              endAdornment: (
+                <InputAdornment position="end">
+                  <IconButton
+                    color="secondary"
+                    onClick={() => {
+                      setContext('')
+                      setPasssword('')
+                    }}
+                  >
+                    <Clear />
+                  </IconButton>
+                </InputAdornment>
+              ),
+            }}
           />
         </Grid>
         <Grid container item xs={12} justify="center" spacing={2}>
