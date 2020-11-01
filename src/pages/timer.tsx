@@ -73,6 +73,19 @@ const Timer = () => {
         <Grid container justify="center" alignItems="center" spacing={2}>
           <Grid container item justify="center" alignItems="center" spacing={2}>
             <Grid item>
+              <IconButton
+                color="inherit"
+                onClick={() => {
+                  if (current > 0) {
+                    setCurrent(current - 1)
+                  }
+                }}
+                disabled={current === 0}
+              >
+                <ArrowBackIosIcon />
+              </IconButton>
+            </Grid>
+            <Grid item>
               <Fab
                 color="primary"
                 onClick={() => {
@@ -98,22 +111,23 @@ const Timer = () => {
                 <RemoveIcon />
               </Fab>
             </Grid>
+            <Grid item>
+              <IconButton
+                color="inherit"
+                className={rightIcon}
+                onClick={() => {
+                  if (current < timers.length - 1) {
+                    setCurrent(current + 1)
+                  }
+                }}
+                disabled={current === timers.length - 1}
+              >
+                <ArrowBackIosIcon />
+              </IconButton>
+            </Grid>
           </Grid>
-          <Grid item>
-            <IconButton
-              color="inherit"
-              onClick={() => {
-                if (current > 0) {
-                  setCurrent(current - 1)
-                }
-              }}
-              disabled={current === 0}
-            >
-              <ArrowBackIosIcon />
-            </IconButton>
-          </Grid>
-          <Grid container item xs={12} sm={8} md={5} spacing={2}>
-            <Grid item xs={4}>
+          <Grid container item xs={12} sm={8} spacing={2}>
+            <Grid item xs={12} sm={4}>
               <TextField
                 fullWidth
                 aria-readonly
@@ -151,7 +165,7 @@ const Timer = () => {
                 }}
               />
             </Grid>
-            <Grid item xs={4}>
+            <Grid item xs={12} sm={4}>
               <TextField
                 fullWidth
                 aria-readonly
@@ -189,7 +203,7 @@ const Timer = () => {
                 }}
               />
             </Grid>
-            <Grid item xs={4}>
+            <Grid item xs={12} sm={4}>
               <TextField
                 fullWidth
                 aria-readonly
@@ -227,20 +241,6 @@ const Timer = () => {
                 }}
               />
             </Grid>
-          </Grid>
-          <Grid item>
-            <IconButton
-              color="inherit"
-              className={rightIcon}
-              onClick={() => {
-                if (current < timers.length - 1) {
-                  setCurrent(current + 1)
-                }
-              }}
-              disabled={current === timers.length - 1}
-            >
-              <ArrowBackIosIcon />
-            </IconButton>
           </Grid>
         </Grid>
       </CardContent>
