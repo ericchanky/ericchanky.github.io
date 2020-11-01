@@ -71,7 +71,7 @@ const Timer = () => {
     <Box className={container}>
       <CardContent>
         <Grid container justify="center" alignItems="center" spacing={2}>
-          <Grid container item justify="center" alignItems="center" spacing={2}>
+          <Grid container item justify="center" alignItems="center" spacing={2} xs={12}>
             <Grid item>
               <IconButton
                 color="inherit"
