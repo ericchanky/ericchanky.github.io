@@ -69,181 +69,183 @@ const Timer = () => {
 
   return (
     <Box className={container}>
-      <CardContent>
-        <Grid container justify="center" alignItems="center" spacing={2}>
-          <Grid container item justify="center" alignItems="center" spacing={2} xs={12}>
-            <Grid item>
-              <IconButton
-                color="inherit"
-                onClick={() => {
-                  if (current > 0) {
-                    setCurrent(current - 1)
-                  }
-                }}
-                disabled={current === 0}
-              >
-                <ArrowBackIosIcon />
-              </IconButton>
-            </Grid>
-            <Grid item>
-              <Fab
-                color="primary"
-                onClick={() => {
-                  setCurrent(timers.length)
-                  setTimers(timers.concat(0))
-                }}
-              >
-                <AddIcon />
-              </Fab>
-            </Grid>
-            <Grid item xs={2}>
-              <Typography variant="h4">{current + 1}</Typography>
-            </Grid>
-            <Grid item>
-              <Fab
-                color="primary"
-                onClick={() => {
-                  setCurrent(timers.length - 1)
-                  setTimers([...timers.slice(0, current), ...timers.slice(current + 1)])
-                }}
-                disabled={timers.length === 1}
-              >
-                <RemoveIcon />
-              </Fab>
-            </Grid>
-            <Grid item>
-              <IconButton
-                color="inherit"
-                className={rightIcon}
-                onClick={() => {
-                  if (current < timers.length - 1) {
-                    setCurrent(current + 1)
-                  }
-                }}
-                disabled={current === timers.length - 1}
-              >
-                <ArrowBackIosIcon />
-              </IconButton>
-            </Grid>
+      <Grid container justify="center" alignItems="center" spacing={2}>
+        <Grid container item justify="center" alignItems="center" spacing={2} xs={12}>
+          <Grid item>
+            <IconButton
+              size="small"
+              color="inherit"
+              onClick={() => {
+                if (current > 0) {
+                  setCurrent(current - 1)
+                }
+              }}
+              disabled={current === 0}
+            >
+              <ArrowBackIosIcon />
+            </IconButton>
           </Grid>
-          <Grid container item xs={12} sm={8} spacing={2}>
-            <Grid item xs={12} sm={4}>
-              <TextField
-                fullWidth
-                aria-readonly
-                variant="outlined"
-                label="Hour"
-                value={hour}
-                inputProps={{
-                  className: textCenter,
-                }}
-                InputProps={{
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      <IconButton
-                        color="inherit"
-                        onClick={() => {
-                          setTimer(timer + Unit.HOUR)
-                        }}
-                      >
-                        <AddIcon />
-                      </IconButton>
-                    </InputAdornment>
-                  ),
-                  endAdornment: (
-                    <InputAdornment position="end">
-                      <IconButton
-                        color="inherit"
-                        onClick={() => {
-                          setTimer(timer > Unit.HOUR ? timer - Unit.HOUR : timer)
-                        }}
-                      >
-                        <RemoveIcon />
-                      </IconButton>
-                    </InputAdornment>
-                  ),
-                }}
-              />
-            </Grid>
-            <Grid item xs={12} sm={4}>
-              <TextField
-                fullWidth
-                aria-readonly
-                variant="outlined"
-                label="Minute"
-                value={minute}
-                inputProps={{
-                  className: textCenter,
-                }}
-                InputProps={{
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      <IconButton
-                        color="inherit"
-                        onClick={() => {
-                          setTimer(timer + Unit.MINUTE)
-                        }}
-                      >
-                        <AddIcon />
-                      </IconButton>
-                    </InputAdornment>
-                  ),
-                  endAdornment: (
-                    <InputAdornment position="end">
-                      <IconButton
-                        color="inherit"
-                        onClick={() => {
-                          setTimer(timer > Unit.MINUTE ? timer - Unit.MINUTE : timer)
-                        }}
-                      >
-                        <RemoveIcon />
-                      </IconButton>
-                    </InputAdornment>
-                  ),
-                }}
-              />
-            </Grid>
-            <Grid item xs={12} sm={4}>
-              <TextField
-                fullWidth
-                aria-readonly
-                variant="outlined"
-                label="Second"
-                value={second}
-                inputProps={{
-                  className: textCenter,
-                }}
-                InputProps={{
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      <IconButton
-                        color="inherit"
-                        onClick={() => {
-                          setTimer(timer + Unit.SECOND)
-                        }}
-                      >
-                        <AddIcon />
-                      </IconButton>
-                    </InputAdornment>
-                  ),
-                  endAdornment: (
-                    <InputAdornment position="end">
-                      <IconButton
-                        color="inherit"
-                        onClick={() => {
-                          setTimer(Math.max(timer - Unit.SECOND, 0))
-                        }}
-                      >
-                        <RemoveIcon />
-                      </IconButton>
-                    </InputAdornment>
-                  ),
-                }}
-              />
-            </Grid>
+          <Grid item>
+            <Fab
+              size="small"
+              color="primary"
+              onClick={() => {
+                setCurrent(timers.length)
+                setTimers(timers.concat(0))
+              }}
+            >
+              <AddIcon />
+            </Fab>
+          </Grid>
+          <Grid item xs={2}>
+            <Typography variant="h4">{current + 1}</Typography>
+          </Grid>
+          <Grid item>
+            <Fab
+              size="small"
+              color="primary"
+              onClick={() => {
+                setCurrent(timers.length - 1)
+                setTimers([...timers.slice(0, current), ...timers.slice(current + 1)])
+              }}
+              disabled={timers.length === 1}
+            >
+              <RemoveIcon />
+            </Fab>
+          </Grid>
+          <Grid item>
+            <IconButton
+              size="small"
+              color="inherit"
+              className={rightIcon}
+              onClick={() => {
+                if (current < timers.length - 1) {
+                  setCurrent(current + 1)
+                }
+              }}
+              disabled={current === timers.length - 1}
+            >
+              <ArrowBackIosIcon />
+            </IconButton>
           </Grid>
         </Grid>
-      </CardContent>
+        <Grid container item xs={12} sm={8} spacing={2}>
+          <Grid item xs={12} sm={4}>
+            <TextField
+              fullWidth
+              aria-readonly
+              variant="outlined"
+              label="Hour"
+              value={hour}
+              inputProps={{
+                className: textCenter,
+              }}
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <IconButton
+                      color="inherit"
+                      onClick={() => {
+                        setTimer(timer + Unit.HOUR)
+                      }}
+                    >
+                      <AddIcon />
+                    </IconButton>
+                  </InputAdornment>
+                ),
+                endAdornment: (
+                  <InputAdornment position="end">
+                    <IconButton
+                      color="inherit"
+                      onClick={() => {
+                        setTimer(timer > Unit.HOUR ? timer - Unit.HOUR : timer)
+                      }}
+                    >
+                      <RemoveIcon />
+                    </IconButton>
+                  </InputAdornment>
+                ),
+              }}
+            />
+          </Grid>
+          <Grid item xs={12} sm={4}>
+            <TextField
+              fullWidth
+              aria-readonly
+              variant="outlined"
+              label="Minute"
+              value={minute}
+              inputProps={{
+                className: textCenter,
+              }}
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <IconButton
+                      color="inherit"
+                      onClick={() => {
+                        setTimer(timer + Unit.MINUTE)
+                      }}
+                    >
+                      <AddIcon />
+                    </IconButton>
+                  </InputAdornment>
+                ),
+                endAdornment: (
+                  <InputAdornment position="end">
+                    <IconButton
+                      color="inherit"
+                      onClick={() => {
+                        setTimer(timer > Unit.MINUTE ? timer - Unit.MINUTE : timer)
+                      }}
+                    >
+                      <RemoveIcon />
+                    </IconButton>
+                  </InputAdornment>
+                ),
+              }}
+            />
+          </Grid>
+          <Grid item xs={12} sm={4}>
+            <TextField
+              fullWidth
+              aria-readonly
+              variant="outlined"
+              label="Second"
+              value={second}
+              inputProps={{
+                className: textCenter,
+              }}
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <IconButton
+                      color="inherit"
+                      onClick={() => {
+                        setTimer(timer + Unit.SECOND)
+                      }}
+                    >
+                      <AddIcon />
+                    </IconButton>
+                  </InputAdornment>
+                ),
+                endAdornment: (
+                  <InputAdornment position="end">
+                    <IconButton
+                      color="inherit"
+                      onClick={() => {
+                        setTimer(Math.max(timer - Unit.SECOND, 0))
+                      }}
+                    >
+                      <RemoveIcon />
+                    </IconButton>
+                  </InputAdornment>
+                ),
+              }}
+            />
+          </Grid>
+        </Grid>
+      </Grid>
       <CardActions>
         <Grid container justify="center" spacing={2}>
           {status !== 'started' && (
