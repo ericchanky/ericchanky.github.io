@@ -112,7 +112,7 @@ const Timer = () => {
               <ArrowBackIosIcon />
             </IconButton>
           </Grid>
-          <Grid container item xs={5} spacing={2}>
+          <Grid container item xs={12} sm={8} md={5} spacing={2}>
             <Grid item xs={4}>
               <TextField
                 fullWidth
