@@ -71,7 +71,7 @@ const SecretPass = () => {
         <Grid item xs={12}>
           <TextField
             fullWidth
-            type="text"
+            type="url"
             autoCapitalize="none"
             variant="outlined"
             size='small'
