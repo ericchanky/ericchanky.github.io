@@ -1,4 +1,4 @@
-import { Box, CardActions, CardContent, Checkbox, Fab, Grid, IconButton, InputAdornment, List, ListItem, ListItemIcon, ListItemText, makeStyles, TextField, Typography } from '@material-ui/core'
+import { Box, CardActions, Checkbox, Fab, Grid, IconButton, InputAdornment, List, ListItem, ListItemIcon, ListItemText, makeStyles, TextField, Typography } from '@material-ui/core'
 import AddIcon from '@material-ui/icons/Add'
 import ArrowBackIosIcon from '@material-ui/icons/ArrowBackIos'
 import PauseIcon from '@material-ui/icons/Pause'
@@ -7,6 +7,7 @@ import RemoveIcon from '@material-ui/icons/Remove'
 import StopIcon from '@material-ui/icons/Stop'
 import React, { useEffect } from 'react'
 
+import Awake from '../components/Awake'
 import Counter from '../components/Counter'
 import { withLayout } from '../components/Layout/withLayout'
 import sound from '../components/sound'
@@ -69,6 +70,7 @@ const Timer = () => {
 
   return (
     <Box className={container}>
+      {status === 'started' && <Awake />}
       <Grid container justify="center" alignItems="center" spacing={2}>
         <Grid container item justify="center" alignItems="center" spacing={2} xs={12}>
           <Grid item>

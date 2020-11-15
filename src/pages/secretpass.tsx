@@ -35,6 +35,15 @@ const SecretPass = () => {
     secretpass.getSecrets(passcode)
   }, [passcode, secretpass])
 
+  useEffect(() => {
+    const t = setTimeout(() => {
+      if (password != '') {
+        setPasssword('')
+      }
+    }, 3 * 60 * 1000)
+    return () => clearTimeout(t)
+  }, [password])
+
   const token = useMemo(() => {
     if (!password) { return '' }
     const secret = secretpass.secret ? secretpass.secret.secret : undefined
