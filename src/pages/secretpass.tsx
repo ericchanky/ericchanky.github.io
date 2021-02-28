@@ -6,7 +6,7 @@ import { useObserver } from 'mobx-react'
 import React, { useContext, useEffect, useMemo, useState } from 'react'
 import { v4 as uuid } from 'uuid'
 
-import { useCopy } from '../components/hooks/useCopy'
+import { useClipboard } from '../components/hooks'
 import Page from '../components/Layout/Page'
 import { CodePad } from '../components/Layout/withAuth'
 import { withLayout } from '../components/Layout/withLayout'
@@ -24,7 +24,7 @@ const SecretPass = () => {
   const [visible, setVisible] = useState(false)
   const [password, setPasssword] = useState('')
   const [context, setContext] = useState('')
-  const [ref, copy] = useCopy()
+  const { copy, clear } = useClipboard()
   const { secretpass } = useContext(storeContext)
   const [open, setOpen] = useState(false)
   const [name, setName] = useState('')
@@ -116,7 +116,6 @@ const SecretPass = () => {
           <TextField
             fullWidth
             aria-readonly
-            inputRef={ref}
             variant="outlined"
             size="small"
             label="Secret Code"
@@ -143,7 +142,7 @@ const SecretPass = () => {
             <Button
               variant="contained"
               onClick={() => {
-                copy()
+                copy(token)
                 setContext('')
                 setPasssword('')
               }}
@@ -154,6 +153,11 @@ const SecretPass = () => {
           <Grid item>
             <Button onClick={() => setOpen(true)}>
               Add Secret
+            </Button>
+          </Grid>
+          <Grid item>
+            <Button onClick={clear}>
+              Clear Clipboard
             </Button>
           </Grid>
         </Grid>
