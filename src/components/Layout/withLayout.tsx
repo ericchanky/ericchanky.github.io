@@ -53,6 +53,7 @@ const darkTheme = (raw: boolean) => createMuiTheme({
     fontSize: 14,
   },
   palette: {
+    type: 'dark',
     primary: {
       main: '#444',
       contrastText: '#f5f5f5',

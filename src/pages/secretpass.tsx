@@ -8,7 +8,7 @@ import { v4 as uuid } from 'uuid'
 
 import { useClipboard } from '../components/hooks'
 import Page from '../components/Layout/Page'
-import { CodePad } from '../components/Layout/withAuth'
+import { CodePad, withAuth } from '../components/Layout/withAuth'
 import { withLayout } from '../components/Layout/withLayout'
 import { storeContext } from '../store'
 import { generateSalt, tokenize } from '../utils/tokenize'
@@ -217,7 +217,7 @@ const SecretPass = () => {
   ))
 }
 
-export default withLayout(SecretPass, {
+export default withLayout(withAuth(SecretPass, { required: true, passthrough: true }), {
   title: 'Secret Pass',
   disableHeader: true,
   theme: 'dark',

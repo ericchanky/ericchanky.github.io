@@ -6,6 +6,7 @@ import React from 'react'
 
 import { storeContext } from '../../store'
 import Config from '../../store/config'
+import { useVisibility } from '../hooks'
 
 interface Props {
   required?: boolean
@@ -106,6 +107,15 @@ export const withAuth = (Component: (props: AuthProps) => JSX.Element, { require
   const { container, verticle } = useStyles({ t: config.theme })
 
   const [password, setPassword] = React.useState(config.password)
+
+  const pageVisible = useVisibility()
+
+  React.useEffect(() => {
+    if (!pageVisible) {
+      config.set({ password: '' })
+      setPassword('')
+    }
+  }, [config, pageVisible])
 
   React.useEffect(() => {
     // init password by query params
