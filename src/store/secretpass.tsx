@@ -3,9 +3,17 @@ import { action, computed, observable } from 'mobx'
 import { createSecret, getSecrets, SecretPassProps } from '../api/secretpass'
 import BaseStore from './BaseStore'
 
+interface Suggestion {
+  version: string
+  context: string
+  password: string
+  name: string
+}
+
 class SecretPass extends BaseStore {
   @observable secrets = observable.array<SecretPassProps>([], { name: 'secrets' })
   @observable selected: string = ''
+  @observable suggestions = observable.array<Suggestion>([], { name: 'suggestions' })
 
   @action
   getSecrets = async (passcode?: string) => {

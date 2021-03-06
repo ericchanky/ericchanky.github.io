@@ -1,7 +1,9 @@
-import { Button, Chip, Dialog, DialogActions, DialogContent, DialogTitle, Grid, IconButton, InputAdornment, makeStyles, TextField, Typography } from '@material-ui/core'
+import { Button, Chip, Dialog, DialogActions, DialogContent, DialogTitle, Grid, IconButton, InputAdornment, List, ListItem, ListItemText, makeStyles, TextField, Typography } from '@material-ui/core'
 import Clear from '@material-ui/icons/Clear'
+import History from '@material-ui/icons/History'
 import Visibility from '@material-ui/icons/Visibility'
 import VisibilityOff from '@material-ui/icons/VisibilityOff'
+import { observable } from 'mobx'
 import { useObserver } from 'mobx-react'
 import React, { useContext, useEffect, useMemo, useState } from 'react'
 import { v4 as uuid } from 'uuid'
@@ -27,6 +29,7 @@ const SecretPass = () => {
   const { copy, clear } = useClipboard()
   const { secretpass } = useContext(storeContext)
   const [open, setOpen] = useState(false)
+  const [openHistory, setOpenHistory] = useState(false)
   const [name, setName] = useState('')
   const [passcode, setPasscode] = useState('')
 
@@ -87,6 +90,18 @@ const SecretPass = () => {
             label="Context"
             value={context}
             onChange={(evt) => setContext(evt.target.value)}
+            InputProps={{
+              endAdornment: (
+                <InputAdornment position="end">
+                  <IconButton
+                    color="secondary"
+                    onClick={() => setOpenHistory(true)}
+                  >
+                    <History />
+                  </IconButton>
+                </InputAdornment>
+              ),
+            }}
           />
         </Grid>
         <Grid item xs={12}>
@@ -151,13 +166,32 @@ const SecretPass = () => {
             </Button>
           </Grid>
           <Grid item>
+            <Button
+              variant="outlined"
+              color="secondary"
+              onClick={() => {
+                const suggestionName = window.prompt('Enter a name:')!
+                secretpass.set({
+                  suggestions: observable.array(secretpass.suggestions.concat({
+                    name: suggestionName,
+                    context,
+                    password,
+                    version: secretpass.selected,
+                  })),
+                })
+              }}
+            >
+              Save
+            </Button>
+          </Grid>
+          <Grid item>
             <Button onClick={() => setOpen(true)}>
               Add Secret
             </Button>
           </Grid>
           <Grid item>
             <Button onClick={clear}>
-              Clear Clipboard
+              Flush
             </Button>
           </Grid>
         </Grid>
@@ -167,6 +201,7 @@ const SecretPass = () => {
         onClose={() => setOpen(false)}
         maxWidth="sm"
         fullWidth
+        fullScreen
       >
         <DialogTitle>Generate secret</DialogTitle>
         <DialogContent>
@@ -212,6 +247,30 @@ const SecretPass = () => {
             Submit
           </Button>
         </DialogActions>
+      </Dialog>
+      <Dialog
+        open={openHistory}
+        onClose={() => setOpenHistory(false)}
+      >
+        <List disablePadding>
+          {secretpass.suggestions.map((suggestion) => {
+            return (
+              <ListItem
+                key={suggestion.name}
+                button
+                onClick={() => {
+                  setContext(suggestion.context)
+                  setPasssword(suggestion.password)
+                  setOpenHistory(false)
+                }}
+              >
+                <ListItemText
+                  primary={suggestion.name}
+                />
+              </ListItem>
+            )
+          })}
+        </List>
       </Dialog>
     </Page>
   ))
