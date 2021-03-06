@@ -11,6 +11,7 @@ export default function HTML(props) {
           name="viewport"
           content="width=device-width, initial-scale=1, shrink-to-fit=no, maximum-scale=1, user-scalable=no"
         />
+        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"></meta>
         {props.headComponents}
       </head>
       <body {...props.bodyAttributes}>
