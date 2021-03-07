@@ -241,6 +241,8 @@ const SecretPass = ({ password: passcode }: { password: string }) => {
         </DialogActions>
       </Dialog>
       <Dialog
+        fullWidth
+        maxWidth="sm"
         open={openHistory}
         onClose={() => setOpenHistory(false)}
       >

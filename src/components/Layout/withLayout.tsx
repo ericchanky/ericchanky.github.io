@@ -107,7 +107,7 @@ export const withLayout = (Component: () => JSX.Element, { title = 'Home Page', 
   })
 
   const Layout = () => {
-    const { main, menuButton } = useStyles()
+    const classes = useStyles()
     const { config } = React.useContext(storeContext)
 
     const [open, setOpen] = React.useState(false)
@@ -228,7 +228,7 @@ export const withLayout = (Component: () => JSX.Element, { title = 'Home Page', 
                     <Toolbar>
                       <IconButton
                         color="inherit"
-                        className={menuButton}
+                        className={classes.menuButton}
                         onClick={() => setOpen(true)}
                       >
                         <MenuIcon />
@@ -250,7 +250,7 @@ export const withLayout = (Component: () => JSX.Element, { title = 'Home Page', 
                     </Toolbar>
                   </AppBar>
                 )}
-                <Box component="main" className={main}>
+                <Box component="main" className={classes.main}>
                   {!disableHeader && <Toolbar />}
                   {!disableHeader && ready && (
                     <CardContent>
