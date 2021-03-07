@@ -9,11 +9,13 @@ import { useObserver } from 'mobx-react'
 import React, { useContext, useEffect, useMemo, useState } from 'react'
 import { v4 as uuid } from 'uuid'
 
+import { useEncryptedData } from '../components/ase'
 import { useClipboard } from '../components/hooks'
 import Page from '../components/Layout/Page'
 import { CodePad, withAuth } from '../components/Layout/withAuth'
 import { withLayout } from '../components/Layout/withLayout'
 import { storeContext } from '../store'
+import { Suggestion } from '../store/secretpass'
 import { generateSalt, tokenize } from '../utils/tokenize'
 
 const useStyles = makeStyles({
@@ -33,6 +35,7 @@ const SecretPass = () => {
   const [openHistory, setOpenHistory] = useState(false)
   const [name, setName] = useState('')
   const [passcode, setPasscode] = useState('')
+  const suggestions = useEncryptedData<Suggestion[]>(secretpass.data, passcode, [])
 
   useEffect(() => {
     if (passcode.length < 6) { return }
@@ -172,20 +175,12 @@ const SecretPass = () => {
               color="secondary"
               onClick={() => {
                 const suggestionName = window.prompt('Enter a name:')!
-                secretpass.setSuggestions(secretpass.suggestions.concat({
+                secretpass.setSuggestions(suggestions.concat({
                   name: suggestionName,
                   context,
                   password,
                   version: secretpass.selected,
                 }), passcode)
-                secretpass.set({
-                  suggestions: observable.array(secretpass.suggestions.concat({
-                    name: suggestionName,
-                    context,
-                    password,
-                    version: secretpass.selected,
-                  })),
-                })
               }}
             >
               Save
@@ -260,7 +255,7 @@ const SecretPass = () => {
         onClose={() => setOpenHistory(false)}
       >
         <List disablePadding>
-          {secretpass.suggestions.map((suggestion) => {
+          {suggestions.map((suggestion) => {
             return (
               <ListItem
                 key={suggestion.name}
@@ -280,7 +275,7 @@ const SecretPass = () => {
                     onClick={() => {
                       if (window.confirm(`Remove ${suggestion.name}`)) {
                         secretpass.setSuggestions(
-                          secretpass.suggestions.filter((s) => s.name !== suggestion.name),
+                          suggestions.filter((s) => s.name !== suggestion.name),
                           passcode,
                         )
                       }

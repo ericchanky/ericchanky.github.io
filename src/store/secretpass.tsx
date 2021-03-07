@@ -4,7 +4,7 @@ import { createSecret, getSecrets, SecretPassProps } from '../api/secretpass'
 import { encrypt } from '../components/ase'
 import BaseStore from './BaseStore'
 
-interface Suggestion {
+export interface Suggestion {
   version: string
   context: string
   password: string
@@ -14,8 +14,6 @@ interface Suggestion {
 class SecretPass extends BaseStore {
   @observable secrets = observable.array<SecretPassProps>([], { name: 'secrets' })
   @observable selected: string = ''
-  @observable suggestions = observable.array<Suggestion>([], { name: 'suggestions' })
-
   @observable data: string | null = null
 
   @action

@@ -51,8 +51,11 @@ export const decrypt = (data: string, token: string) => {
   }
 }
 
-export const useEncryptedData = <T, >(data: string, token: string, init: T): T => {
-  const decrypted = useMemo(() => decrypt(data, token), [data, token])
+export const useEncryptedData = <T, >(data: string | null, token: string, init: T): T => {
+  const decrypted = useMemo(() => {
+    if (!data) { return null }
+    return decrypt(data, token)
+  }, [data, token])
   if (!decrypted) { return init }
   return JSON.parse(decrypted)
 }
