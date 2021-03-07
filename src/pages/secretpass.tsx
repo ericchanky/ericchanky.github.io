@@ -1,5 +1,6 @@
-import { Button, Chip, Dialog, DialogActions, DialogContent, DialogTitle, Grid, IconButton, InputAdornment, List, ListItem, ListItemText, makeStyles, TextField, Typography } from '@material-ui/core'
+import { Button, Chip, Dialog, DialogActions, DialogContent, DialogTitle, Grid, IconButton, InputAdornment, List, ListItem, ListItemSecondaryAction, ListItemText, makeStyles, TextField, Typography } from '@material-ui/core'
 import Clear from '@material-ui/icons/Clear'
+import Delete from '@material-ui/icons/Delete'
 import History from '@material-ui/icons/History'
 import Visibility from '@material-ui/icons/Visibility'
 import VisibilityOff from '@material-ui/icons/VisibilityOff'
@@ -171,6 +172,12 @@ const SecretPass = () => {
               color="secondary"
               onClick={() => {
                 const suggestionName = window.prompt('Enter a name:')!
+                secretpass.setSuggestions(secretpass.suggestions.concat({
+                  name: suggestionName,
+                  context,
+                  password,
+                  version: secretpass.selected,
+                }), passcode)
                 secretpass.set({
                   suggestions: observable.array(secretpass.suggestions.concat({
                     name: suggestionName,
@@ -267,6 +274,21 @@ const SecretPass = () => {
                 <ListItemText
                   primary={suggestion.name}
                 />
+                <ListItemSecondaryAction>
+                  <IconButton
+                    color="inherit"
+                    onClick={() => {
+                      if (window.confirm(`Remove ${suggestion.name}`)) {
+                        secretpass.setSuggestions(
+                          secretpass.suggestions.filter((s) => s.name !== suggestion.name),
+                          passcode,
+                        )
+                      }
+                    }}
+                  >
+                    <Delete />
+                  </IconButton>
+                </ListItemSecondaryAction>
               </ListItem>
             )
           })}
