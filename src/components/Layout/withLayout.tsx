@@ -92,20 +92,19 @@ interface Props extends HelmetProps {
   theme?: 'dark' | 'light'
 }
 
-const useStyles = makeStyles((theme) => ({
+const generateClassName = createGenerateClassName({
+  disableGlobal: false,
+})
+
+const useStyles = makeStyles((t) => ({
   main: {
     height: '100vh',
   },
   menuButton: {
-    marginRight: theme.spacing(2),
+    marginRight: t.spacing(2),
   },
 }))
-
 export const withLayout = (Component: () => JSX.Element, { title = 'Home Page', disableHeader = false, theme, ...props }: Props) => {
-  const generateClassName = createGenerateClassName({
-    disableGlobal: false,
-  })
-
   const Layout = () => {
     const classes = useStyles()
     const { config } = React.useContext(storeContext)
