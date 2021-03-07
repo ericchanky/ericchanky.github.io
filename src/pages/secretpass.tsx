@@ -4,7 +4,6 @@ import Delete from '@material-ui/icons/Delete'
 import History from '@material-ui/icons/History'
 import Visibility from '@material-ui/icons/Visibility'
 import VisibilityOff from '@material-ui/icons/VisibilityOff'
-import { observable } from 'mobx'
 import { useObserver } from 'mobx-react'
 import React, { useContext, useEffect, useMemo, useState } from 'react'
 import { v4 as uuid } from 'uuid'
@@ -12,7 +11,7 @@ import { v4 as uuid } from 'uuid'
 import { useEncryptedData } from '../components/ase'
 import { useClipboard } from '../components/hooks'
 import Page from '../components/Layout/Page'
-import { CodePad, withAuth } from '../components/Layout/withAuth'
+import { withAuth } from '../components/Layout/withAuth'
 import { withLayout } from '../components/Layout/withLayout'
 import { storeContext } from '../store'
 import { Suggestion } from '../store/secretpass'
@@ -24,7 +23,7 @@ const useStyles = makeStyles({
   },
 })
 
-const SecretPass = () => {
+const SecretPass = ({ password: passcode }: { password: string }) => {
   const classes = useStyles()
   const [visible, setVisible] = useState(false)
   const [password, setPasssword] = useState('')
@@ -34,22 +33,21 @@ const SecretPass = () => {
   const [open, setOpen] = useState(false)
   const [openHistory, setOpenHistory] = useState(false)
   const [name, setName] = useState('')
-  const [passcode, setPasscode] = useState('')
   const suggestions = useEncryptedData<Suggestion[]>(secretpass.data, passcode, [])
 
   useEffect(() => {
-    if (passcode.length < 6) { return }
+    if (secretpass.secrets.length === 0) { return }
     secretpass.getSecrets(passcode)
   }, [passcode, secretpass])
 
-  useEffect(() => {
-    const t = setTimeout(() => {
-      if (password != '') {
-        setPasssword('')
-      }
-    }, 3 * 60 * 1000)
-    return () => clearTimeout(t)
-  }, [password])
+  // useEffect(() => {
+  //   const t = setTimeout(() => {
+  //     if (password != '') {
+  //       setPasssword('')
+  //     }
+  //   }, 3 * 60 * 1000)
+  //   return () => clearTimeout(t)
+  // }, [password])
 
   const token = useMemo(() => {
     if (!password) { return '' }
@@ -209,22 +207,13 @@ const SecretPass = () => {
         <DialogContent>
           <Grid container justify="center">
             <Grid item xs={12}>
-              {passcode.length < 6 && (
-                <CodePad
-                  theme="dark"
-                  password={passcode}
-                  setPassword={setPasscode}
-                />
-              )}
-              {passcode.length >= 6 && (
-                <TextField
-                  fullWidth
-                  variant="outlined"
-                  label="name"
-                  value={name}
-                  onChange={(evt) => setName(evt.target.value)}
-                />
-              )}
+              <TextField
+                fullWidth
+                variant="outlined"
+                label="name"
+                value={name}
+                onChange={(evt) => setName(evt.target.value)}
+              />
             </Grid>
           </Grid>
         </DialogContent>
