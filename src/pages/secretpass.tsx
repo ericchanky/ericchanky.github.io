@@ -172,7 +172,8 @@ const SecretPass = ({ password: passcode }: { password: string }) => {
               variant="outlined"
               color="secondary"
               onClick={() => {
-                const suggestionName = window.prompt('Enter a name:')!
+                const suggestionName = window.prompt('Enter a name:')
+                if (!suggestionName) { return }
                 secretpass.setSuggestions(suggestions.concat({
                   name: suggestionName,
                   context,
