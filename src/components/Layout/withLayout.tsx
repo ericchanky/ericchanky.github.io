@@ -93,7 +93,8 @@ interface Props extends HelmetProps {
 }
 
 const generateClassName = createGenerateClassName({
-  disableGlobal: false,
+  disableGlobal: true,
+  productionPrefix: 'ec',
 })
 
 const useStyles = makeStyles((theme) => ({
