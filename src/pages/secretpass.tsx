@@ -8,7 +8,7 @@ import { useObserver } from 'mobx-react'
 import React, { useContext, useEffect, useMemo, useState } from 'react'
 import { v4 as uuid } from 'uuid'
 
-import { useEncryptedData } from '../components/ase'
+import { useEncryptedData } from '../components/aes'
 import { useClipboard } from '../components/hooks'
 import Page from '../components/Layout/Page'
 import { withAuth } from '../components/Layout/withAuth'

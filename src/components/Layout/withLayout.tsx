@@ -96,14 +96,15 @@ const generateClassName = createGenerateClassName({
   disableGlobal: false,
 })
 
-const useStyles = makeStyles((t) => ({
+const useStyles = makeStyles((theme) => ({
   main: {
     height: '100vh',
   },
   menuButton: {
-    marginRight: t.spacing(2),
+    marginRight: theme.spacing(2),
   },
 }))
+
 export const withLayout = (Component: () => JSX.Element, { title = 'Home Page', disableHeader = false, theme, ...props }: Props) => {
   const Layout = () => {
     const classes = useStyles()

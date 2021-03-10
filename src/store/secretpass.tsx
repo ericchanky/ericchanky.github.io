@@ -1,7 +1,7 @@
 import { action, computed, observable } from 'mobx'
 
 import { createSecret, getSecrets, SecretPassProps } from '../api/secretpass'
-import { encrypt } from '../components/ase'
+import { encrypt } from '../components/aes'
 import BaseStore from './BaseStore'
 
 export interface Suggestion {
@@ -33,7 +33,7 @@ class SecretPass extends BaseStore {
     this.getSecrets()
   }
 
-  @action
+  @action.bound
   setSuggestions(suggestions: Suggestion[], token: string) {
     const data = encrypt(JSON.stringify(suggestions), token)
     if (data) {
