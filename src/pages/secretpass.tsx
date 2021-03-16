@@ -219,6 +219,9 @@ const SecretPass = ({ password: passcode }: { password: string }) => {
           </Grid>
         </DialogContent>
         <DialogActions>
+          <Button size="small" onClick={() => secretpass.getSecrets(passcode)}>
+            Reload
+          </Button>
           <Button size="small" onClick={() => setOpen(false)}>
             Close
           </Button>

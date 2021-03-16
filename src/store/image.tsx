@@ -170,6 +170,10 @@ class Image extends BaseStore {
         page_token: nextPageToken || '',
       })
 
+      if (res.data.error) {
+        throw new Error(JSON.stringify(res.data.error))
+      }
+
       if (albumId !== this.albumId) {
         return // force stop due to changed album
       }
@@ -197,6 +201,8 @@ class Image extends BaseStore {
 
       await this.fetch(albumId, res.data.nextPageToken || '')
     } catch (err) {
+      const e = JSON.parse(err.message)
+      if (e.code === 401) { return }
       setTimeout(async (id, token) => {
         await this.fetchAuth()
         await this.fetch(id, token)
