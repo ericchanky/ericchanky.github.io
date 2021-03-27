@@ -2,7 +2,7 @@
   "name": "tools",
   "private": true,
   "description": "A simple starter to get up and developing quickly with Gatsby",
-  "version": "1.0.47",
+  "version": "1.0.48",
   "author": "Eric Chan KY <eric.cky715@gmail.com>",
   "dependencies": {
     "@material-ui/core": "^4.9.8",
@@ -47,7 +47,7 @@
     "@types/lodash": "^4.14.161",
     "@types/node": "^13.11.0",
     "@types/qs": "^6.9.5",
-    "@types/react": "^16.9.49",
+    "@types/react": "^16.13.1",
     "@types/react-big-calendar": "^0.24.6",
     "@types/react-dom": "^16.9.8",
     "@types/react-hammerjs": "^1.0.1",
